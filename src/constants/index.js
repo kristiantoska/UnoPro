@@ -1,3 +1,4 @@
+const CARD_RATIO = 1.5875;
 const DECK_LENGTH = 108;
 
 const basicCardsPerColor = new Array(10).fill(0).reduce(
@@ -24,4 +25,4 @@ const FULL_DECK = {
   },
 };
 
-return { FULL_DECK, DECK_LENGTH };
+export { FULL_DECK, DECK_LENGTH, CARD_RATIO };

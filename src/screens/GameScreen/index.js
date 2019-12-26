@@ -8,7 +8,7 @@ const GameScreen = () => (
   <View style={styles.container}>
     <GameBackground />
 
-    <Player position="bottom" />
+    <Player position="bottom" active />
     <Player position="right" />
     <Player position="top" />
     <Player position="left" />

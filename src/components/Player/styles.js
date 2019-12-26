@@ -9,12 +9,20 @@ export default StyleSheet.create({
     height: 45,
     width: 45,
     borderRadius: 10,
-    marginLeft: -20,
+    marginLeft: -25,
     marginTop: -20,
     backgroundColor: 'white',
+    position: 'absolute',
   },
 
   backgroundSvg: {
     position: 'absolute',
+    bottom: 0,
+  },
+
+  cardHandContainer: {
+    backgroundColor: '#202020a0',
+    flex: 1,
+    marginHorizontal: 30,
   },
 });
