@@ -6,8 +6,8 @@ import styles from './styles';
 
 const CardHand = ({ cards, hidden = true }) => (
   <View style={styles.container}>
-    {[1, 2, 3, 4].map((cardData, index) => (
-      <Card key={index} hidden={hidden} />
+    {cards.map((cardData, index) => (
+      <Card key={index} card={cardData} hidden={hidden} />
     ))}
   </View>
 );

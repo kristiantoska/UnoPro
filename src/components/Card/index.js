@@ -1,11 +1,12 @@
 import React from 'react';
 import { View } from 'react-native';
-import Svg, { Path, Rect, Ellipse, Text as SvgText } from 'react-native-svg';
+import Svg, { Path, Rect, Ellipse, Text as SvgText, G } from 'react-native-svg';
 
 import { CARD_RATIO } from '../../constants';
 import styles from './styles';
 
 const COLORS = {
+  white: '#ffffff',
   red: '#EC1A23',
   yellow: '#FEDE01',
   green: '#00A54F',
@@ -27,7 +28,7 @@ const renderText = ({ cardHeight, cardWidth, value, color, fontSize }) => {
         x={cardWidth / 2}
         y={cardHeight / 2 + fontSize / 3}
         textAnchor="middle"
-        rotation={5}
+        rotation={4}
       >
         {value}
       </SvgText>
@@ -41,15 +42,27 @@ const renderText = ({ cardHeight, cardWidth, value, color, fontSize }) => {
         x={cardWidth / 2}
         y={cardHeight / 2 + fontSize / 3}
         textAnchor="middle"
-        rotation={5}
+        rotation={4}
       >
         {value}
       </SvgText>
+
+      {(value === 6 || value === 9) && (
+        <Rect
+          x={cardWidth / 2 - 7}
+          y={cardHeight / 2 + fontSize / 2}
+          height={2}
+          width={14}
+          fill={COLORS[color]}
+          stroke="black"
+          strokeWidth={0.5}
+        />
+      )}
     </React.Fragment>
   );
 };
 
-const Card = ({ card = { value: 0, color: 'red' }, hidden }) => {
+const Card = ({ card = { value: 6, color: 'blue' }, hidden }) => {
   const { value, color } = card;
   const cardHeight = 60;
   const cardWidth = Math.round(cardHeight / CARD_RATIO);
@@ -96,14 +109,39 @@ const Card = ({ card = { value: 0, color: 'red' }, hidden }) => {
           rotation={25}
         />
 
-        {hidden
-          ? renderText({
-              ...config,
-              value: 'UNO',
-              color: 'yellow',
-              fontSize: 13,
-            })
-          : renderText(config)}
+        {hidden ? (
+          renderText({
+            ...config,
+            value: 'UNO',
+            color: 'yellow',
+            fontSize: 13,
+          })
+        ) : (
+          <React.Fragment>
+            <G
+              originX={cardWidth / 2}
+              originY={cardHeight / 2}
+              scale={0.3}
+              x={-cardWidth / 2 + 5}
+              y={-cardHeight / 2 + 7}
+            >
+              {renderText({ ...config, color: 'white' })}
+            </G>
+
+            {renderText(config)}
+
+            <G
+              originX={cardWidth / 2}
+              originY={cardHeight / 2}
+              scale={0.3}
+              x={cardWidth / 2 - 5}
+              y={cardHeight / 2 - 7}
+              rotation={180}
+            >
+              {renderText({ ...config, color: 'white' })}
+            </G>
+          </React.Fragment>
+        )}
       </Svg>
     </View>
   );

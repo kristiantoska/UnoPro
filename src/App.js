@@ -3,7 +3,7 @@ import { SafeAreaView, StatusBar } from 'react-native';
 
 import GameScreen from './screens/GameScreen';
 
-const App: () => React$Node = () => {
+const App = () => {
   return (
     <>
       <StatusBar barStyle="dark-content" />

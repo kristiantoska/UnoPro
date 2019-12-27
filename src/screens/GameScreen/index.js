@@ -1,18 +1,23 @@
 import React from 'react';
 import { View } from 'react-native';
 
-import styles from './styles';
+import { fullDeck } from '../../constants';
 import { GameBackground, Player } from '../../components';
+import styles from './styles';
 
-const GameScreen = () => (
-  <View style={styles.container}>
-    <GameBackground />
+const GameScreen = () => {
+  const deck = fullDeck();
 
-    <Player position="bottom" active />
-    <Player position="right" />
-    <Player position="top" />
-    <Player position="left" />
-  </View>
-);
+  return (
+    <View style={styles.container}>
+      <GameBackground />
+
+      <Player position="bottom" active cards={deck.slice(0, 5)} />
+      <Player position="right" cards={deck.slice(0, 5)} />
+      <Player position="top" cards={deck.slice(0, 5)} />
+      <Player position="left" cards={deck.slice(0, 5)} />
+    </View>
+  );
+};
 
 export default GameScreen;
