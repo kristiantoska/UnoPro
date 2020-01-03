@@ -8,6 +8,10 @@ export default StyleSheet.create({
     justifyContent: 'center',
   },
 
+  absoluetView: {
+    position: 'absolute',
+  },
+
   backgroundImage: {
     height: '60%',
     width: '60%',
