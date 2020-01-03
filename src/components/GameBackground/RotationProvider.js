@@ -1,7 +1,13 @@
 import React, { useRef, useEffect, useCallback } from 'react';
 import { Animated, Easing } from 'react-native';
 
-const RotationProvider = ({ style, duration = 5000, flipped, children }) => {
+const RotationProvider = ({
+  style,
+  duration = 5000,
+  flipped,
+  animationEnabled,
+  children,
+}) => {
   const animation = useRef(new Animated.Value(0));
 
   const startAnimation = useCallback(
@@ -10,16 +16,21 @@ const RotationProvider = ({ style, duration = 5000, flipped, children }) => {
         duration,
         toValue,
         easing: Easing.linear,
+        useNativeDriver: true,
       }).start(() => {
         animation.current.setValue(0);
-        startAnimation(1);
+        if (animationEnabled) {
+          startAnimation(1);
+        }
       });
     },
-    [duration],
+    [duration, animationEnabled],
   );
 
   useEffect(() => {
-    // startAnimation(1);
+    if (animationEnabled) {
+      startAnimation(1);
+    }
   }, [startAnimation]);
 
   return (
