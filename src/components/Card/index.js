@@ -1,68 +1,12 @@
 import React from 'react';
 import { View } from 'react-native';
-import Svg, { Path, Rect, Ellipse, Text as SvgText, G } from 'react-native-svg';
+import Svg, { Rect, Ellipse, G } from 'react-native-svg';
 
-import { CARD_RATIO } from '../../constants';
+import { CARD_RATIO, COLORS } from '../../constants';
+import Symbols from './Symbols';
 import styles from './styles';
 
-const COLORS = {
-  white: '#ffffff',
-  red: '#EC1A23',
-  yellow: '#FEDE01',
-  green: '#00A54F',
-  blue: '#0194D9',
-  black: '#000000',
-};
-
-const renderText = ({ cardHeight, cardWidth, value, color, fontSize }) => {
-  return (
-    <React.Fragment>
-      <SvgText
-        dx={1}
-        dy={1}
-        originX={cardWidth / 2}
-        originY={cardHeight / 2}
-        fill="black"
-        fontSize={fontSize}
-        fontWeight="bold"
-        x={cardWidth / 2}
-        y={cardHeight / 2 + fontSize / 3}
-        textAnchor="middle"
-        rotation={4}
-      >
-        {value}
-      </SvgText>
-
-      <SvgText
-        originX={cardWidth / 2}
-        originY={cardHeight / 2}
-        fill={COLORS[color]}
-        fontSize={fontSize}
-        fontWeight="bold"
-        x={cardWidth / 2}
-        y={cardHeight / 2 + fontSize / 3}
-        textAnchor="middle"
-        rotation={4}
-      >
-        {value}
-      </SvgText>
-
-      {(value === 6 || value === 9) && (
-        <Rect
-          x={cardWidth / 2 - 7}
-          y={cardHeight / 2 + fontSize / 2}
-          height={2}
-          width={14}
-          fill={COLORS[color]}
-          stroke="black"
-          strokeWidth={0.5}
-        />
-      )}
-    </React.Fragment>
-  );
-};
-
-const Card = ({ card = { value: 6, color: 'blue' }, hidden }) => {
+const Card = ({ card = { value: 'wildDraw4', color: 'blue' }, hidden }) => {
   const { value, color } = card;
   const cardHeight = 60;
   const cardWidth = Math.round(cardHeight / CARD_RATIO);
@@ -74,6 +18,10 @@ const Card = ({ card = { value: 6, color: 'blue' }, hidden }) => {
     cardWidth,
     fontSize: 24,
   };
+
+  const sideValues =
+    value === 'wildDraw4' ? '+4' : value === 'draw2' ? '+2' : value;
+  const sideScale = value === 'wild' ? 0.2 : 0.3;
 
   return (
     <View
@@ -110,35 +58,49 @@ const Card = ({ card = { value: 6, color: 'blue' }, hidden }) => {
         />
 
         {hidden ? (
-          renderText({
-            ...config,
-            value: 'UNO',
-            color: 'yellow',
-            fontSize: 13,
-          })
+          <Symbols
+            {...{
+              ...config,
+              value: 'UNO',
+              color: 'yellow',
+              fontSize: 13,
+            }}
+          />
         ) : (
           <React.Fragment>
             <G
               originX={cardWidth / 2}
               originY={cardHeight / 2}
-              scale={0.3}
+              scale={sideScale}
               x={-cardWidth / 2 + 5}
               y={-cardHeight / 2 + 7}
             >
-              {renderText({ ...config, color: 'white' })}
+              <Symbols
+                {...{
+                  ...config,
+                  color: 'white',
+                  value: sideValues,
+                }}
+              />
             </G>
 
-            {renderText(config)}
+            <Symbols {...config} />
 
             <G
               originX={cardWidth / 2}
               originY={cardHeight / 2}
-              scale={0.3}
+              scale={sideScale}
               x={cardWidth / 2 - 5}
               y={cardHeight / 2 - 7}
               rotation={180}
             >
-              {renderText({ ...config, color: 'white' })}
+              <Symbols
+                {...{
+                  ...config,
+                  color: 'white',
+                  value: sideValues,
+                }}
+              />
             </G>
           </React.Fragment>
         )}

@@ -1,5 +1,13 @@
 const CARD_RATIO = 1.5875;
 const DECK_LENGTH = 108;
+const COLORS = {
+  white: '#ffffff',
+  red: '#EC1A23',
+  yellow: '#FEDE01',
+  green: '#00A54F',
+  blue: '#0194D9',
+  black: '#000000',
+};
 
 const fullDeck = () => {
   const numbers = new Array(9).fill(0).map((el, i) => i + 1);
@@ -45,4 +53,4 @@ const fullDeck = () => {
   return deck;
 };
 
-export { fullDeck, DECK_LENGTH, CARD_RATIO };
+export { fullDeck, DECK_LENGTH, CARD_RATIO, COLORS };

@@ -12,7 +12,17 @@ const GameScreen = () => {
     <View style={styles.container}>
       <GameBackground />
 
-      <Player position="bottom" active cards={deck.slice(0, 5)} />
+      <Player
+        position="bottom"
+        active
+        cards={[
+          { value: 'wildDraw4', color: 'black' },
+          { value: 'draw2', color: 'red' },
+          { value: 'reverse', color: 'red' },
+          { value: 'skip', color: 'red' },
+          { value: 'wild', color: 'black' },
+        ]}
+      />
       <Player position="right" cards={deck.slice(0, 5)} />
       <Player position="top" cards={deck.slice(0, 5)} />
       <Player position="left" cards={deck.slice(0, 5)} />
