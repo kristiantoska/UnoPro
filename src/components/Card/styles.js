@@ -1,5 +1,8 @@
 import { StyleSheet } from 'react-native';
 
 export default StyleSheet.create({
-  container: {},
+  container: {
+    borderWidth: StyleSheet.hairlineWidth,
+    borderRadius: 5,
+  },
 });

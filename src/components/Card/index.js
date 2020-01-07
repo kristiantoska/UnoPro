@@ -30,6 +30,7 @@ const Card = ({ card = { value: 'wildDraw4', color: 'blue' }, hidden }) => {
         {
           height: cardHeight,
           width: cardWidth,
+          marginLeft: -5,
         },
       ]}
     >

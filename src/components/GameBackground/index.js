@@ -1,8 +1,9 @@
 import React, { useRef } from 'react';
-import { Animated, TouchableOpacity } from 'react-native';
+import { View, Animated, TouchableOpacity } from 'react-native';
 import Svg, { Circle } from 'react-native-svg';
 
 import { COLORS } from '../../constants';
+import { Card } from '../';
 import RotationProvider from './RotationProvider';
 import ArcsCircle from './ArcsCircle';
 import styles from './styles';
@@ -40,6 +41,30 @@ const GameBackground = ({ animationEnabled = false }) => {
     }
   };
 
+  const DeckView = () => (
+    <View style={[styles.absoluteView, { left: 220, bottom: 160 }]}>
+      {new Array(20).fill(0).map((el, i) => (
+        <View
+          key={i}
+          style={[
+            styles.absoluteView,
+            {
+              transform: [
+                { rotateZ: '135deg' },
+                { rotateY: '45deg' },
+                { rotateX: '45deg' },
+                { translateX: i * 0.8 },
+                { translateY: -i * 0.6 },
+              ],
+            },
+          ]}
+        >
+          <Card hidden />
+        </View>
+      ))}
+    </View>
+  );
+
   return (
     <AnimatedTouchableOpacity
       activeOpacity={0.9}
@@ -47,7 +72,7 @@ const GameBackground = ({ animationEnabled = false }) => {
       onPress={() => scaleBump()}
     >
       <RotationProvider
-        style={styles.absoluetView}
+        style={styles.absoluteView}
         duration={T}
         {...{ animationEnabled }}
       >
@@ -57,7 +82,7 @@ const GameBackground = ({ animationEnabled = false }) => {
       </RotationProvider>
 
       <RotationProvider
-        style={styles.absoluetView}
+        style={styles.absoluteView}
         duration={T * 1.4}
         flipped
         {...{ animationEnabled }}
@@ -68,6 +93,8 @@ const GameBackground = ({ animationEnabled = false }) => {
           <ArcsCircle r={r3} shiftAngle={45} {...{ cx, cy, color }} flipped />
         </Svg>
       </RotationProvider>
+
+      <DeckView />
     </AnimatedTouchableOpacity>
   );
 };

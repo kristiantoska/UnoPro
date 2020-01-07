@@ -8,7 +8,7 @@ export default StyleSheet.create({
     justifyContent: 'center',
   },
 
-  absoluetView: {
+  absoluteView: {
     position: 'absolute',
   },
 

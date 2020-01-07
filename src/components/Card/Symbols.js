@@ -16,7 +16,7 @@ const Symbols = params => {
     <React.Fragment>
       {value !== 'wild' && (
         <G x={1} y={1}>
-          <Comp {...{ ...params, color: 'black' }} />
+          <Comp {...{ ...params, color: 'black', shadow: true }} />
         </G>
       )}
 
