@@ -6,7 +6,12 @@ import { CARD_RATIO, COLORS } from '../../constants';
 import Symbols from './Symbols';
 import styles from './styles';
 
-const Card = ({ card = { value: 'wildDraw4', color: 'blue' }, hidden }) => {
+const Card = ({
+  card = { value: 'wildDraw4', color: 'blue' },
+  hidden,
+  isValid,
+  inCardHand,
+}) => {
   const { value, color } = card;
   const cardHeight = 60;
   const cardWidth = Math.round(cardHeight / CARD_RATIO);
@@ -19,6 +24,7 @@ const Card = ({ card = { value: 'wildDraw4', color: 'blue' }, hidden }) => {
     fontSize: 24,
   };
 
+  const invalidCard = !isValid && !hidden;
   const sideValues =
     value === 'wildDraw4' ? '+4' : value === 'draw2' ? '+2' : value;
   const sideScale = value === 'wild' ? 0.2 : 0.3;
@@ -27,10 +33,11 @@ const Card = ({ card = { value: 'wildDraw4', color: 'blue' }, hidden }) => {
     <View
       style={[
         styles.container,
+        inCardHand && styles.cardContainer,
+        invalidCard && styles.invalidCard,
         {
           height: cardHeight,
           width: cardWidth,
-          marginLeft: -5,
         },
       ]}
     >
@@ -106,6 +113,10 @@ const Card = ({ card = { value: 'wildDraw4', color: 'blue' }, hidden }) => {
           </React.Fragment>
         )}
       </Svg>
+
+      {invalidCard && (
+        <View style={[styles.invalidCardOverlay, { width: cardWidth + 1 }]} />
+      )}
     </View>
   );
 };

@@ -24,16 +24,17 @@ const GameBackground = ({ animationEnabled = false }) => {
 
   const color = 'blue';
   const T = 8000;
+  const bumpT = 300;
 
   const scaleBump = () => {
     if (animationEnabled) {
-      Animated.timing(animation.current, {
-        duration: 400,
-        toValue: 1.3,
+      Animated.spring(animation.current, {
+        toValue: 1.2,
+        speed: 50,
         useNativeDriver: true,
       }).start(() =>
         Animated.timing(animation.current, {
-          duration: 400,
+          duration: bumpT,
           toValue: 1,
           useNativeDriver: true,
         }).start(),
@@ -66,36 +67,40 @@ const GameBackground = ({ animationEnabled = false }) => {
   );
 
   return (
-    <AnimatedTouchableOpacity
-      activeOpacity={0.9}
-      style={[styles.container, { transform: [{ scale: animation.current }] }]}
-      onPress={() => scaleBump()}
-    >
-      <RotationProvider
-        style={styles.absoluteView}
-        duration={T}
-        {...{ animationEnabled }}
+    <React.Fragment>
+      <AnimatedTouchableOpacity
+        activeOpacity={1}
+        style={[
+          styles.container,
+          { transform: [{ scale: animation.current }] },
+        ]}
+        onPress={() => scaleBump()}
       >
-        <Svg height={300} width={300}>
-          <ArcsCircle r={r1} {...{ cx, cy, color }} />
-        </Svg>
-      </RotationProvider>
+        <RotationProvider
+          style={styles.absoluteView}
+          duration={T}
+          {...{ animationEnabled }}
+        >
+          <Svg height={300} width={300}>
+            <ArcsCircle r={r1} {...{ cx, cy, color }} />
+          </Svg>
+        </RotationProvider>
 
-      <RotationProvider
-        style={styles.absoluteView}
-        duration={T * 1.4}
-        flipped
-        {...{ animationEnabled }}
-      >
-        <Svg height={300} width={300}>
-          <Circle x={cx} y={cy} r={r2} fill="none" stroke={COLORS[color]} />
+        <RotationProvider
+          style={styles.absoluteView}
+          duration={T * 2.5}
+          {...{ animationEnabled }}
+        >
+          <Svg height={300} width={300}>
+            <Circle x={cx} y={cy} r={r2} fill="none" stroke={COLORS[color]} />
 
-          <ArcsCircle r={r3} shiftAngle={45} {...{ cx, cy, color }} flipped />
-        </Svg>
-      </RotationProvider>
+            <ArcsCircle r={r3} shiftAngle={45} {...{ cx, cy, color }} />
+          </Svg>
+        </RotationProvider>
+      </AnimatedTouchableOpacity>
 
       <DeckView />
-    </AnimatedTouchableOpacity>
+    </React.Fragment>
   );
 };
 

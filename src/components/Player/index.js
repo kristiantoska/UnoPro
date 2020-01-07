@@ -13,7 +13,9 @@ const Player = ({
   width = screenHeight * 0.8,
   position = 'bottom',
   cards = [],
+  activeCardFilter,
   active,
+  hasTurn,
 }) => {
   const arcHeight = height - 15;
 
@@ -35,7 +37,12 @@ const Player = ({
       </Svg>
 
       <View style={styles.cardHandContainer}>
-        <CardHand cards={cards} hidden={!active} />
+        <CardHand
+          cards={cards}
+          hidden={!active}
+          hasTurn={hasTurn}
+          activeCardFilter={activeCardFilter}
+        />
       </View>
 
       <View style={styles.playerIcon} />
