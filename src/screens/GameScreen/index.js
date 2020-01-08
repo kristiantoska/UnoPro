@@ -1,7 +1,6 @@
 import React, { useReducer, useCallback } from 'react';
 import { View } from 'react-native';
 
-import { fullDeck } from '../../constants';
 import { GameBackground, Player, CardPile } from '../../components';
 import GameStateReducer, { INITIAL_GAME_STATE } from './reducer';
 import styles from './styles';
@@ -11,9 +10,8 @@ const GameScreen = () => {
     GameStateReducer,
     INITIAL_GAME_STATE,
   );
-  const deck = fullDeck();
 
-  const { lastCardValue, boardColor } = gameState;
+  const { deck, pileCards, lastCardValue, boardColor } = gameState;
 
   const activeCardFilter = useCallback(
     card =>
@@ -24,11 +22,21 @@ const GameScreen = () => {
     [lastCardValue, boardColor],
   );
 
+  function addCardToPile() {
+    dispatch({
+      type: 'ADD_CARD_TO_PILE',
+      payload: {
+        value: 'reverse',
+        color: 'red',
+      },
+    });
+  }
+
   return (
     <View style={styles.container}>
       <GameBackground />
 
-      <CardPile />
+      <CardPile pileCards={pileCards} addCardToPile={addCardToPile} />
 
       <Player
         position="bottom"

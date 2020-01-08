@@ -12,7 +12,7 @@ const AnimatedTouchableOpacity = Animated.createAnimatedComponent(
   TouchableOpacity,
 );
 
-const GameBackground = ({ animationEnabled = false }) => {
+const GameBackground = React.memo(({ animationEnabled = false }) => {
   const animation = useRef(new Animated.Value(1));
 
   const cx = 150;
@@ -92,7 +92,7 @@ const GameBackground = ({ animationEnabled = false }) => {
       <DeckView />
     </React.Fragment>
   );
-};
+});
 
 // <RotationProvider
 //   style={styles.absoluteView}
