@@ -34,7 +34,7 @@ const Card = ({
       style={[
         styles.container,
         inCardHand && styles.cardContainer,
-        invalidCard && styles.invalidCard,
+        inCardHand && invalidCard && styles.invalidCard,
         {
           height: cardHeight,
           width: cardWidth,
@@ -115,7 +115,12 @@ const Card = ({
       </Svg>
 
       {invalidCard && (
-        <View style={[styles.invalidCardOverlay, { width: cardWidth + 1 }]} />
+        <View
+          style={[
+            styles.invalidCardOverlay,
+            { width: cardWidth + 1, height: cardHeight + 1 },
+          ]}
+        />
       )}
     </View>
   );

@@ -2,7 +2,7 @@ import React, { useReducer, useCallback } from 'react';
 import { View } from 'react-native';
 
 import { fullDeck } from '../../constants';
-import { GameBackground, Player } from '../../components';
+import { GameBackground, Player, CardPile } from '../../components';
 import GameStateReducer, { INITIAL_GAME_STATE } from './reducer';
 import styles from './styles';
 
@@ -27,6 +27,8 @@ const GameScreen = () => {
   return (
     <View style={styles.container}>
       <GameBackground />
+
+      <CardPile />
 
       <Player
         position="bottom"

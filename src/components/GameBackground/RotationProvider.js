@@ -31,7 +31,7 @@ const RotationProvider = ({
     if (animationEnabled) {
       startAnimation(1);
     }
-  }, [startAnimation]);
+  }, [startAnimation, animationEnabled]);
 
   return (
     <Animated.View

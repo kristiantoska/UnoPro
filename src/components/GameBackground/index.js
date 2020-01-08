@@ -30,7 +30,7 @@ const GameBackground = ({ animationEnabled = false }) => {
     if (animationEnabled) {
       Animated.spring(animation.current, {
         toValue: 1.2,
-        speed: 50,
+        speed: 40,
         useNativeDriver: true,
       }).start(() =>
         Animated.timing(animation.current, {
