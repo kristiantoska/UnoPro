@@ -5,8 +5,8 @@ import { Card } from '../';
 import styles from './styles';
 
 const MAX_PILE_HEIGHT = 14;
-const D_X = 20;
-const D_Y = 20;
+const D_X = 18;
+const D_Y = 18;
 const D_ANGLE = 90;
 
 const randomIntFromInterval = (min, max) => {

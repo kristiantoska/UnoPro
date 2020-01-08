@@ -18,9 +18,9 @@ const GameBackground = ({ animationEnabled = false }) => {
   const cx = 150;
   const cy = 150;
 
-  const r1 = 40;
-  const r2 = 50;
-  const r3 = 60;
+  const r1 = 50;
+  const r2 = 60;
+  const r3 = 70;
 
   const color = 'blue';
   const T = 8000;
@@ -78,16 +78,6 @@ const GameBackground = ({ animationEnabled = false }) => {
       >
         <RotationProvider
           style={styles.absoluteView}
-          duration={T}
-          {...{ animationEnabled }}
-        >
-          <Svg height={300} width={300}>
-            <ArcsCircle r={r1} {...{ cx, cy, color }} />
-          </Svg>
-        </RotationProvider>
-
-        <RotationProvider
-          style={styles.absoluteView}
           duration={T * 2.5}
           {...{ animationEnabled }}
         >
@@ -103,5 +93,15 @@ const GameBackground = ({ animationEnabled = false }) => {
     </React.Fragment>
   );
 };
+
+// <RotationProvider
+//   style={styles.absoluteView}
+//   duration={T}
+//   {...{ animationEnabled }}
+// >
+//   <Svg height={300} width={300}>
+//     <ArcsCircle r={r1} {...{ cx, cy, color }} />
+//   </Svg>
+// </RotationProvider>;
 
 export default GameBackground;
