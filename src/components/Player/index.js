@@ -14,6 +14,7 @@ const Player = ({
   position = 'bottom',
   cards = [],
   activeCardFilter,
+  onCardClick,
   active,
   hasTurn,
 }) => {
@@ -42,6 +43,7 @@ const Player = ({
           hidden={!active}
           hasTurn={hasTurn}
           activeCardFilter={activeCardFilter}
+          onCardClick={onCardClick}
         />
       </View>
 

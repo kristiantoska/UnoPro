@@ -4,7 +4,13 @@ import { View } from 'react-native';
 import { Card } from '../';
 import styles from './styles';
 
-const CardHand = ({ cards, hidden = true, activeCardFilter, hasTurn }) => (
+const CardHand = ({
+  cards,
+  hidden = true,
+  activeCardFilter,
+  hasTurn,
+  onCardClick,
+}) => (
   <View style={styles.container}>
     {cards.map((cardData, index) => (
       <Card
@@ -13,6 +19,7 @@ const CardHand = ({ cards, hidden = true, activeCardFilter, hasTurn }) => (
         hidden={hidden}
         isValid={hasTurn ? activeCardFilter(cardData) : false}
         inCardHand
+        onCardClick={onCardClick}
       />
     ))}
   </View>

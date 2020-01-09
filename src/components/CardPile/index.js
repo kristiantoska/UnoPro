@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { View, TouchableOpacity } from 'react-native';
 
 import { Card } from '../';
@@ -9,7 +9,12 @@ const CardPile = ({ pileCards, addCardToPile }) => {
     <TouchableOpacity
       activeOpacity={1}
       style={styles.container}
-      onPress={() => addCardToPile()}
+      onPress={() =>
+        addCardToPile({
+          value: 'reverse',
+          color: 'red',
+        })
+      }
     >
       {pileCards.map((pileCard, i) => (
         <View

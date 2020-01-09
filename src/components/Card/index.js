@@ -1,5 +1,5 @@
 import React from 'react';
-import { View } from 'react-native';
+import { View, TouchableOpacity } from 'react-native';
 import Svg, { Rect, Ellipse, G } from 'react-native-svg';
 
 import { CARD_RATIO, COLORS } from '../../constants';
@@ -12,6 +12,7 @@ const Card = React.memo(
     hidden,
     isValid,
     inCardHand,
+    onCardClick,
   }) => {
     const { value, color } = card;
     const cardHeight = 60;
@@ -31,7 +32,7 @@ const Card = React.memo(
     const sideScale = value === 'wild' ? 0.2 : 0.3;
 
     return (
-      <View
+      <TouchableOpacity
         style={[
           styles.container,
           inCardHand && styles.cardContainer,
@@ -41,6 +42,9 @@ const Card = React.memo(
             width: cardWidth,
           },
         ]}
+        activeOpacity={0.9}
+        disabled={!inCardHand || hidden || invalidCard}
+        onPress={() => onCardClick(card)}
       >
         <Svg height={cardHeight} width={cardWidth}>
           <Rect
@@ -123,7 +127,7 @@ const Card = React.memo(
             ]}
           />
         )}
-      </View>
+      </TouchableOpacity>
     );
   },
 );
