@@ -46,8 +46,6 @@ const GameScreen = () => {
     turnOrder.current = Object.keys(INIT_PLAYERS_STATE).slice(0, NUM_PLAYERS);
   }, []);
 
-  ref.current && ref.current.animateNextTransition();
-
   const activeCardFilter = useCallback(
     card =>
       lastCardValue === null ||
@@ -58,6 +56,8 @@ const GameScreen = () => {
   );
 
   const throwCard = useCallback((card, newBoardColor) => {
+    ref.current && ref.current.animateNextTransition();
+
     const currentTurn = turnOrder.current.findIndex(
       el => el === currentTurnName.current,
     );
@@ -120,13 +120,20 @@ const GameScreen = () => {
     [throwCard],
   );
 
+  const areTurnsReversed = turnOrder.current
+    ? turnOrder.current[0] > turnOrder.current[1]
+    : false;
+
   return (
     <Transitioning.View
       ref={ref}
       style={styles.container}
       transition={transition}
     >
-      <GameBackground />
+      <GameBackground
+        boardColor={boardColor}
+        turnsReversed={areTurnsReversed}
+      />
 
       <CardPile pileCards={pileCards} />
 

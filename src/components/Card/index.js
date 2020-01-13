@@ -7,13 +7,7 @@ import Symbols from './Symbols';
 import styles from './styles';
 
 const Card = React.memo(
-  ({
-    card = { value: 'wildDraw4', color: 'blue' },
-    hidden,
-    isValid,
-    inCardHand,
-    onCardClick,
-  }) => {
+  ({ card, hidden, isValid, inCardHand, onCardClick }) => {
     const { value, color } = card;
     const cardHeight = 60;
     const cardWidth = Math.round(cardHeight / CARD_RATIO);

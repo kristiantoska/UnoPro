@@ -14,7 +14,7 @@ const CardHand = ({
   <View style={styles.container}>
     {cards.map((cardData, index) => (
       <Card
-        key={JSON.stringify(cardData)}
+        key={`${cardData.value}-${cardData.color}-${cardData.key}`}
         card={cardData}
         hidden={hidden}
         isValid={hasTurn ? activeCardFilter(cardData) : false}
