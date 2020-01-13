@@ -119,14 +119,18 @@ const Card = React.memo(
           )}
         </Svg>
 
-        {invalidCard && (
-          <View
-            style={[
-              styles.invalidCardOverlay,
-              { width: cardWidth + 1, height: cardHeight + 1 },
-            ]}
-          />
-        )}
+        <View
+          style={[
+            styles.invalidCardOverlay,
+            // eslint-disable-next-line react-native/no-inline-styles
+            {
+              width: cardWidth + 1,
+              height: cardHeight + 1,
+              opacity: invalidCard ? 1 : 0,
+            },
+          ]}
+          pointerEvents={invalidCard ? 'auto' : 'none'}
+        />
       </TouchableOpacity>
     );
   },

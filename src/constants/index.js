@@ -16,38 +16,38 @@ const fullDeck = () => {
 
   for (let i = 0; i < colors.length; i++) {
     // add 0
-    deck.push({ color: colors[i], value: 0 });
+    deck.push({ color: colors[i], value: 0, key: 0 });
 
     // add 1-9
     for (let j = 0; j < numbers.length; j++) {
-      deck.push({ color: colors[i], value: numbers[j] });
+      deck.push({ color: colors[i], value: numbers[j], key: 0 });
     }
 
     for (let j = 0; j < numbers.length; j++) {
-      deck.push({ color: colors[i], value: numbers[j] });
+      deck.push({ color: colors[i], value: numbers[j], key: 1 });
     }
 
     // add special
     for (let j = 0; j < 2; j++) {
-      deck.push({ color: colors[i], value: 'reverse' });
+      deck.push({ color: colors[i], value: 'reverse', key: j });
     }
 
     for (let j = 0; j < 2; j++) {
-      deck.push({ color: colors[i], value: 'skip' });
+      deck.push({ color: colors[i], value: 'skip', key: j });
     }
 
     for (let j = 0; j < 2; j++) {
-      deck.push({ color: colors[i], value: 'draw2' });
+      deck.push({ color: colors[i], value: 'draw2', key: j });
     }
   }
 
   // add wild
   for (let j = 0; j < 4; j++) {
-    deck.push({ color: 'black', value: 'wild' });
+    deck.push({ color: 'black', value: 'wild', key: j });
   }
 
   for (let j = 0; j < 4; j++) {
-    deck.push({ color: 'black', value: 'wildDraw4' });
+    deck.push({ color: 'black', value: 'wildDraw4', key: j });
   }
 
   return deck;

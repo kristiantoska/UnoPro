@@ -1,5 +1,5 @@
 import React, { useRef, useReducer, useCallback, useEffect } from 'react';
-import { View } from 'react-native';
+import { Transitioning, Transition } from 'react-native-reanimated';
 
 import {
   GameBackground,
@@ -15,6 +15,13 @@ import styles from './styles';
 
 const NUM_PLAYERS = 4;
 
+const transition = (
+  <Transition.Sequence>
+    <Transition.Out type="scale" durationMs={150} />
+    <Transition.Change interpolation="easeInOut" durationMs={200} />
+    <Transition.In type="fade" durationMs={100} />
+  </Transition.Sequence>
+);
 const GameScreen = () => {
   const [gameState, dispatch] = useReducer(GameStateReducer, INIT_GAME_STATE);
   const turnOrder = useRef(null);
@@ -22,6 +29,7 @@ const GameScreen = () => {
   const cardDrawModifier = useRef(null);
   const cardDrawAmount = useRef(0);
   const tmpCard = useRef(null);
+  const ref = useRef();
 
   const {
     turn,
@@ -37,6 +45,8 @@ const GameScreen = () => {
     dispatch({ type: 'INIT_GAME', payload: { NUM_PLAYERS } });
     turnOrder.current = Object.keys(INIT_PLAYERS_STATE).slice(0, NUM_PLAYERS);
   }, []);
+
+  ref.current && ref.current.animateNextTransition();
 
   const activeCardFilter = useCallback(
     card =>
@@ -111,7 +121,11 @@ const GameScreen = () => {
   );
 
   return (
-    <View style={styles.container}>
+    <Transitioning.View
+      ref={ref}
+      style={styles.container}
+      transition={transition}
+    >
       <GameBackground />
 
       <CardPile pileCards={pileCards} />
@@ -153,7 +167,7 @@ const GameScreen = () => {
       )}
 
       <ColorPicker visible={colorPickerVisible} onColorClick={onColorPick} />
-    </View>
+    </Transitioning.View>
   );
 };
 
