@@ -21,7 +21,7 @@ export default StyleSheet.create({
   },
 
   cardHandContainer: {
-    backgroundColor: '#202020a0',
+    // backgroundColor: '#202020a0',
     flex: 1,
     marginHorizontal: 30,
   },

@@ -5,7 +5,7 @@ import {
   getRandomPileCardPosition,
 } from '../../utils';
 
-const MAX_PILE_HEIGHT = 15;
+const MAX_PILE_HEIGHT = 180;
 const START_HAND_CARDS = 7;
 
 export const INIT_PLAYERS_STATE = {
@@ -15,13 +15,14 @@ export const INIT_PLAYERS_STATE = {
   p4: [],
 };
 export const INIT_GAME_STATE = {
-  turn: 'p1',
+  turn: null,
   lastCardValue: null,
   boardColor: null,
   deck: fullDeck(),
   pileCards: [],
   players: INIT_PLAYERS_STATE,
   colorPickerVisible: false,
+  cardDrawnThisTurn: false,
 };
 
 export default function reducer(state, action) {
@@ -30,10 +31,18 @@ export default function reducer(state, action) {
       return initGame(state, action);
     case 'THROW_CARD':
       return throwCard(state, action);
+    case 'DRAW_CARD':
+      return drawCard(state, action);
+    case 'SKIP_TURN':
+      return {
+        ...state,
+        turn: action.payload.nextTurn,
+        cardDrawnThisTurn: false,
+      };
     case 'TOGGLE_COLOR_PICKER':
       return { ...state, colorPickerVisible: action.payload.visible };
     default:
-      throw new Error('InVaLiD ReDuCeR TyPe');
+      return state;
   }
 }
 
@@ -66,6 +75,7 @@ const initGame = (state, action) => {
 
   return {
     ...state,
+    turn: 'p1',
     pileCards: [
       { cardData: firstCard, positionData: getRandomPileCardPosition() },
     ],
@@ -82,6 +92,7 @@ const throwCard = (state, action) => {
 
   return {
     ...state,
+    cardDrawnThisTurn: false,
     turn: newTurn,
     players: {
       ...players,
@@ -90,14 +101,36 @@ const throwCard = (state, action) => {
     lastCardValue: cardData.value,
     boardColor: newBoardColor,
     pileCards: [
-      ...state.pileCards.slice(
-        Math.max(0, state.pileCards.length - 1 - MAX_PILE_HEIGHT),
-        state.pileCards.length,
-      ),
+      ...state.pileCards,
       {
         cardData: cardData,
         positionData: getRandomPileCardPosition(),
       },
     ],
+  };
+};
+
+// state.pileCards.slice(
+//         Math.max(0, state.pileCards.length - 1 - MAX_PILE_HEIGHT),
+//         state.pileCards.length,
+//       )
+
+const drawCard = (state, action) => {
+  const { deck, players, turn } = state;
+  const tmpPlayers = { ...players };
+  let tmpDeck = [...deck];
+
+  const nextCardIndex = randomIntFromInterval(0, tmpDeck.length - 1);
+
+  tmpPlayers[turn] = [...tmpPlayers[turn], tmpDeck[nextCardIndex]];
+  tmpDeck = tmpDeck.filter((el, j) => j !== nextCardIndex);
+
+  action.payload.afterDraw(tmpPlayers[turn]);
+
+  return {
+    ...state,
+    cardDrawnThisTurn: true,
+    deck: tmpDeck,
+    players: tmpPlayers,
   };
 };

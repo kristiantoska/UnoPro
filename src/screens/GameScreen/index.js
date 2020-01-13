@@ -25,11 +25,13 @@ const transition = (
 const GameScreen = () => {
   const [gameState, dispatch] = useReducer(GameStateReducer, INIT_GAME_STATE);
   const turnOrder = useRef(null);
-  const currentTurnName = useRef('p1');
   const cardDrawModifier = useRef(null);
   const cardDrawAmount = useRef(0);
   const tmpCard = useRef(null);
+
+  // ENABLE ANIMATIONS
   const ref = useRef();
+  ref.current && ref.current.animateNextTransition();
 
   const {
     turn,
@@ -38,6 +40,7 @@ const GameScreen = () => {
     boardColor,
     players,
     colorPickerVisible,
+    cardDrawnThisTurn,
   } = gameState;
 
   useEffect(() => {
@@ -55,47 +58,92 @@ const GameScreen = () => {
     [lastCardValue, boardColor],
   );
 
-  const throwCard = useCallback((card, newBoardColor) => {
-    ref.current && ref.current.animateNextTransition();
-
-    const currentTurn = turnOrder.current.findIndex(
-      el => el === currentTurnName.current,
-    );
-    let nextTurn =
-      turnOrder.current[(currentTurn + 1) % turnOrder.current.length];
-
-    if (card.value === 'reverse') {
-      nextTurn =
-        turnOrder.current[
-          (currentTurn + turnOrder.current.length - 1) %
-            turnOrder.current.length
-        ];
-      turnOrder.current = turnOrder.current.reverse();
-    } else if (card.value === 'skip') {
-      nextTurn =
-        turnOrder.current[
-          (currentTurn + turnOrder.current.length + 2) %
-            turnOrder.current.length
-        ];
-    } else if (card.value === 'draw2') {
-      cardDrawModifier.current = 'draw2';
-      cardDrawAmount.current += 2;
-    } else if (card.value === 'wildDraw4') {
-      cardDrawModifier.current = 'wildDraw4';
-      cardDrawAmount.current += 4;
-    }
-
+  const drawCard = useCallback(() => {
     dispatch({
-      type: 'THROW_CARD',
+      type: 'DRAW_CARD',
       payload: {
-        newTurn: nextTurn,
-        cardData: card,
-        newBoardColor,
+        afterDraw: newCards => {
+          const nextPossibleMoves = newCards.filter(activeCardFilter);
+          if (nextPossibleMoves.length === 0) {
+            setTimeout(() => {
+              const currentTurn = turnOrder.current.findIndex(
+                el => el === turn,
+              );
+              let nextTurn =
+                turnOrder.current[(currentTurn + 1) % turnOrder.current.length];
+
+              dispatch({
+                type: 'SKIP_TURN',
+                payload: {
+                  nextTurn,
+                },
+              });
+            }, 700);
+          }
+        },
       },
     });
-    tmpCard.current = null;
-    currentTurnName.current = nextTurn;
-  }, []);
+  }, [turn]);
+
+  const beforeNextTurn = useCallback(() => {
+    setTimeout(() => {
+      const possibleMoves = players[turn].filter(activeCardFilter);
+
+      if (possibleMoves.length === 0) {
+        drawCard();
+      }
+    }, 500);
+  }, [players, turn, activeCardFilter, drawCard]);
+
+  useEffect(() => {
+    if (turn !== null) {
+      beforeNextTurn();
+    }
+  }, [turn]);
+
+  const throwCard = useCallback(
+    (card, newBoardColor) => {
+      const currentTurn = turnOrder.current.findIndex(el => el === turn);
+      let nextTurn =
+        turnOrder.current[(currentTurn + 1) % turnOrder.current.length];
+
+      if (card.value === 'reverse') {
+        nextTurn =
+          turnOrder.current[
+            (currentTurn + turnOrder.current.length - 1) %
+              turnOrder.current.length
+          ];
+        turnOrder.current = turnOrder.current.reverse();
+      } else if (card.value === 'skip') {
+        nextTurn =
+          turnOrder.current[
+            (currentTurn + turnOrder.current.length + 2) %
+              turnOrder.current.length
+          ];
+      } else if (card.value === 'draw2') {
+        cardDrawModifier.current = 'draw2';
+        cardDrawAmount.current += 2;
+      } else if (card.value === 'wildDraw4') {
+        cardDrawModifier.current = 'wildDraw4';
+        cardDrawAmount.current += 4;
+      }
+
+      dispatch({
+        type: 'THROW_CARD',
+        payload: {
+          newTurn: nextTurn,
+          cardData: card,
+          newBoardColor,
+        },
+      });
+      tmpCard.current = null;
+
+      beforeNextTurn();
+    },
+    [turn, beforeNextTurn],
+  );
+
+  drawCard;
 
   const onCardClick = useCallback(
     card => {
@@ -133,6 +181,8 @@ const GameScreen = () => {
       <GameBackground
         boardColor={boardColor}
         turnsReversed={areTurnsReversed}
+        cardDrawnThisTurn={cardDrawnThisTurn}
+        drawCard={drawCard}
       />
 
       <CardPile pileCards={pileCards} />

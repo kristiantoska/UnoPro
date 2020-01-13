@@ -17,4 +17,11 @@ export default StyleSheet.create({
     width: '60%',
     resizeMode: 'contain',
   },
+
+  deckOverlay: {
+    position: 'absolute',
+    backgroundColor: 'gray',
+    width: '100%',
+    height: '100%',
+  },
 });

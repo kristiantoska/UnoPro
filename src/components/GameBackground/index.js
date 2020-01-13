@@ -13,7 +13,7 @@ const AnimatedTouchableOpacity = Animated.createAnimatedComponent(
 );
 
 const DeckView = React.memo(() => (
-  <View style={[styles.absoluteView, { left: 220, bottom: 160 }]}>
+  <React.Fragment>
     {new Array(20).fill(0).map((el, i) => (
       <View
         key={i}
@@ -33,11 +33,17 @@ const DeckView = React.memo(() => (
         <Card card={{}} hidden />
       </View>
     ))}
-  </View>
+  </React.Fragment>
 ));
 
 const GameBackground = React.memo(
-  ({ animationEnabled = false, boardColor, turnsReversed }) => {
+  ({
+    animationEnabled = false,
+    boardColor,
+    turnsReversed,
+    drawCard,
+    cardDrawnThisTurn,
+  }) => {
     const animation = useRef(new Animated.Value(1));
 
     const cx = 150;
@@ -102,7 +108,16 @@ const GameBackground = React.memo(
           </RotationProvider>
         </AnimatedTouchableOpacity>
 
-        <DeckView />
+        <TouchableOpacity
+          style={[
+            styles.absoluteView,
+            { left: 220, bottom: 160, opacity: cardDrawnThisTurn ? 0.5 : 1 },
+          ]}
+          disabled={cardDrawnThisTurn}
+          onPress={drawCard}
+        >
+          <DeckView />
+        </TouchableOpacity>
       </React.Fragment>
     );
   },

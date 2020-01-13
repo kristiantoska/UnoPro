@@ -18,7 +18,7 @@ const Player = ({
   active,
   hasTurn,
 }) => {
-  const arcHeight = height - 15;
+  const arcHeight = height + 5;
 
   return (
     <View
@@ -28,11 +28,18 @@ const Player = ({
         { height, width },
       ]}
     >
-      <Svg height={arcHeight} width={width} style={styles.backgroundSvg}>
+      <Svg
+        height={arcHeight}
+        width={width}
+        style={[
+          styles.backgroundSvg,
+          { opacity: hasTurn ? 1 : 0.3, bottom: hasTurn ? 0 : -20 },
+        ]}
+      >
         <Path
           d={`M 0, ${arcHeight} Q ${width /
             2}, ${-arcHeight} ${width}, ${arcHeight}`}
-          fill="#0073A9"
+          fill="#0080ff"
           stroke="none"
         />
       </Svg>
