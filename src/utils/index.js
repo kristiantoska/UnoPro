@@ -2,6 +2,9 @@ const D_X = 18;
 const D_Y = 18;
 const D_ANGLE = 90;
 
+export const isSameCard = (c1, c2) =>
+  c1.value === c2.value && c1.color === c2.color;
+
 export const randomIntFromInterval = (min, max) => {
   return Math.floor(Math.random() * (max - min + 1) + min);
 };

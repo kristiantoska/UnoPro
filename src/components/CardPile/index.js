@@ -1,21 +1,12 @@
 import React from 'react';
-import { View, TouchableOpacity } from 'react-native';
+import { View } from 'react-native';
 
 import { Card } from '../';
 import styles from './styles';
 
 const CardPile = ({ pileCards, addCardToPile }) => {
   return (
-    <TouchableOpacity
-      activeOpacity={1}
-      style={styles.container}
-      onPress={() =>
-        addCardToPile({
-          value: 'reverse',
-          color: 'red',
-        })
-      }
-    >
+    <View style={styles.container}>
       {pileCards.map((pileCard, i) => (
         <View
           style={[
@@ -33,7 +24,7 @@ const CardPile = ({ pileCards, addCardToPile }) => {
           <Card card={pileCard.cardData} isValid={i === pileCards.length - 1} />
         </View>
       ))}
-    </TouchableOpacity>
+    </View>
   );
 };
 

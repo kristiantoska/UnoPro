@@ -29,7 +29,7 @@ const GameBackground = React.memo(({ animationEnabled = false }) => {
   const scaleBump = () => {
     if (animationEnabled) {
       Animated.spring(animation.current, {
-        toValue: 1.2,
+        toValue: 1.1,
         speed: 40,
         useNativeDriver: true,
       }).start(() =>
@@ -79,12 +79,13 @@ const GameBackground = React.memo(({ animationEnabled = false }) => {
         <RotationProvider
           style={styles.absoluteView}
           duration={T * 2.5}
+          flipped
           {...{ animationEnabled }}
         >
           <Svg height={300} width={300}>
             <Circle x={cx} y={cy} r={r2} fill="none" stroke={COLORS[color]} />
 
-            <ArcsCircle r={r3} shiftAngle={45} {...{ cx, cy, color }} />
+            <ArcsCircle r={r3} shiftAngle={45} {...{ cx, cy, color }} flipped />
           </Svg>
         </RotationProvider>
       </AnimatedTouchableOpacity>
