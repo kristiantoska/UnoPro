@@ -33,14 +33,9 @@ export default function reducer(state, action) {
       return throwCard(state, action);
     case 'DRAW_CARD':
       return drawCard(state, action);
-    case 'SKIP_TURN':
-      return {
-        ...state,
-        turn: action.payload.nextTurn,
-        cardDrawnThisTurn: false,
-      };
     case 'TOGGLE_COLOR_PICKER':
       return { ...state, colorPickerVisible: action.payload.visible };
+
     default:
       return state;
   }
@@ -90,9 +85,14 @@ const throwCard = (state, action) => {
   const { turn, players } = state;
   const { newTurn, cardData, newBoardColor } = action.payload;
 
+  if (cardData === null) {
+    return { ...state, cardDrawnThisTurn: false, turn: newTurn };
+  }
+
   return {
     ...state,
     cardDrawnThisTurn: false,
+    boardDisabled: false,
     turn: newTurn,
     players: {
       ...players,
@@ -108,24 +108,24 @@ const throwCard = (state, action) => {
       },
     ],
   };
+  // state.pileCards.slice(
+  //         Math.max(0, state.pileCards.length - 1 - MAX_PILE_HEIGHT),
+  //         state.pileCards.length,
+  //       )
 };
 
-// state.pileCards.slice(
-//         Math.max(0, state.pileCards.length - 1 - MAX_PILE_HEIGHT),
-//         state.pileCards.length,
-//       )
-
 const drawCard = (state, action) => {
-  const { deck, players, turn } = state;
+  const { player, afterDraw } = action.payload;
+  const { deck, players } = state;
   const tmpPlayers = { ...players };
   let tmpDeck = [...deck];
 
   const nextCardIndex = randomIntFromInterval(0, tmpDeck.length - 1);
 
-  tmpPlayers[turn] = [...tmpPlayers[turn], tmpDeck[nextCardIndex]];
+  tmpPlayers[player] = [...tmpPlayers[player], tmpDeck[nextCardIndex]];
   tmpDeck = tmpDeck.filter((el, j) => j !== nextCardIndex);
 
-  action.payload.afterDraw(tmpPlayers[turn]);
+  afterDraw && afterDraw(tmpPlayers[player]);
 
   return {
     ...state,

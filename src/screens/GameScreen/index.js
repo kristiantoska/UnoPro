@@ -62,28 +62,18 @@ const GameScreen = () => {
     dispatch({
       type: 'DRAW_CARD',
       payload: {
+        player: turn,
         afterDraw: newCards => {
           const nextPossibleMoves = newCards.filter(activeCardFilter);
           if (nextPossibleMoves.length === 0) {
             setTimeout(() => {
-              const currentTurn = turnOrder.current.findIndex(
-                el => el === turn,
-              );
-              let nextTurn =
-                turnOrder.current[(currentTurn + 1) % turnOrder.current.length];
-
-              dispatch({
-                type: 'SKIP_TURN',
-                payload: {
-                  nextTurn,
-                },
-              });
+              throwCard(null);
             }, 700);
           }
         },
       },
     });
-  }, [turn]);
+  }, [turn, activeCardFilter, throwCard]);
 
   const beforeNextTurn = useCallback(() => {
     setTimeout(() => {
@@ -99,51 +89,82 @@ const GameScreen = () => {
     if (turn !== null) {
       beforeNextTurn();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [turn]);
+
+  const drawCards = useCallback((amount, player, endCallback) => {
+    if (amount === 0) {
+      endCallback();
+    } else {
+      dispatch({
+        type: 'DRAW_CARD',
+        payload: { player },
+      });
+
+      setTimeout(() => drawCards(amount - 1, player, endCallback), 400);
+    }
+  }, []);
 
   const throwCard = useCallback(
     (card, newBoardColor) => {
+      const savedTurn = turn;
       const currentTurn = turnOrder.current.findIndex(el => el === turn);
       let nextTurn =
         turnOrder.current[(currentTurn + 1) % turnOrder.current.length];
 
-      if (card.value === 'reverse') {
-        nextTurn =
-          turnOrder.current[
-            (currentTurn + turnOrder.current.length - 1) %
-              turnOrder.current.length
-          ];
-        turnOrder.current = turnOrder.current.reverse();
-      } else if (card.value === 'skip') {
-        nextTurn =
-          turnOrder.current[
-            (currentTurn + turnOrder.current.length + 2) %
-              turnOrder.current.length
-          ];
-      } else if (card.value === 'draw2') {
-        cardDrawModifier.current = 'draw2';
-        cardDrawAmount.current += 2;
-      } else if (card.value === 'wildDraw4') {
-        cardDrawModifier.current = 'wildDraw4';
-        cardDrawAmount.current += 4;
+      if (card !== null) {
+        // MANAGE special cards
+        if (card.value === 'reverse') {
+          nextTurn =
+            turnOrder.current[
+              (currentTurn + turnOrder.current.length - 1) %
+                turnOrder.current.length
+            ];
+          turnOrder.current = turnOrder.current.reverse();
+        } else if (card.value === 'skip') {
+          nextTurn =
+            turnOrder.current[
+              (currentTurn + turnOrder.current.length + 2) %
+                turnOrder.current.length
+            ];
+        } else if (card.value === 'draw2') {
+          cardDrawModifier.current = 'draw2';
+          cardDrawAmount.current += 2;
+        } else if (card.value === 'wildDraw4') {
+          cardDrawModifier.current = 'wildDraw4';
+          cardDrawAmount.current += 4;
+        }
       }
 
-      dispatch({
-        type: 'THROW_CARD',
-        payload: {
-          newTurn: nextTurn,
-          cardData: card,
-          newBoardColor,
-        },
-      });
-      tmpCard.current = null;
+      const endTurn = () => {
+        ref.current.setNativeProps({ pointerEvents: 'auto' });
+        dispatch({
+          type: 'THROW_CARD',
+          payload: {
+            newTurn: nextTurn,
+            cardData: card,
+            newBoardColor,
+          },
+        });
+      };
 
-      beforeNextTurn();
+      // MANAGE +2 +4 stacking/draw
+      if (
+        cardDrawModifier.current !== null &&
+        (card === null ||
+          (card.value !== 'draw2' && card.value !== 'wildDraw4'))
+      ) {
+        ref.current.setNativeProps({ pointerEvents: 'none' });
+        drawCards(cardDrawAmount.current, savedTurn, endTurn);
+
+        cardDrawModifier.current = null;
+        cardDrawAmount.current = 0;
+      } else {
+        endTurn();
+      }
     },
-    [turn, beforeNextTurn],
+    [turn, drawCards],
   );
-
-  drawCard;
 
   const onCardClick = useCallback(
     card => {
