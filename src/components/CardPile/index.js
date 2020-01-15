@@ -21,7 +21,17 @@ const CardPile = ({ pileCards, addCardToPile }) => {
           ]}
           key={JSON.stringify(pileCard.positionData)}
         >
-          <Card card={pileCard.cardData} isValid={i === pileCards.length - 1} />
+          <Card card={pileCard.cardData} />
+
+          <View
+            style={[
+              styles.invalidCardOverlay,
+              // eslint-disable-next-line react-native/no-inline-styles
+              {
+                opacity: i !== pileCards.length - 1 ? 1 : 0,
+              },
+            ]}
+          />
         </View>
       ))}
     </View>

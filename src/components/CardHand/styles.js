@@ -7,4 +7,14 @@ export default StyleSheet.create({
     alignItems: 'flex-start',
     justifyContent: 'center',
   },
+
+  invalidCardOverlay: {
+    borderRadius: 5,
+    position: 'absolute',
+    left: 0,
+    right: -1,
+    bottom: -1,
+    top: 0,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
 });

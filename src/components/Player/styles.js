@@ -6,11 +6,11 @@ export default StyleSheet.create({
   },
 
   playerIcon: {
-    height: 45,
-    width: 45,
+    height: 36,
+    width: 36,
     borderRadius: 10,
-    marginLeft: -25,
-    marginTop: -20,
+    marginLeft: 20,
+    marginTop: -40,
     backgroundColor: 'white',
     position: 'absolute',
   },
