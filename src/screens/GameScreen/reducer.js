@@ -5,7 +5,7 @@ import {
   getRandomPileCardPosition,
 } from '../../utils';
 
-const MAX_PILE_HEIGHT = 180;
+const MAX_PILE_HEIGHT = 20;
 const START_HAND_CARDS = 7;
 
 export const INIT_PLAYERS_STATE = {
@@ -101,7 +101,10 @@ const throwCard = (state, action) => {
     lastCardValue: cardData.value,
     boardColor: newBoardColor,
     pileCards: [
-      ...state.pileCards,
+      ...state.pileCards.slice(
+        Math.max(0, state.pileCards.length - 1 - MAX_PILE_HEIGHT),
+        state.pileCards.length,
+      ),
       {
         cardData: cardData,
         positionData: getRandomPileCardPosition(),

@@ -17,7 +17,6 @@ const NUM_PLAYERS = 4;
 
 const transition = (
   <Transition.Sequence>
-    <Transition.Out type="scale" durationMs={150} />
     <Transition.Change interpolation="easeInOut" durationMs={200} />
     <Transition.In type="fade" durationMs={100} />
   </Transition.Sequence>

@@ -5,6 +5,7 @@ import { Card } from '../';
 import styles from './styles';
 
 const CardPile = ({ pileCards, addCardToPile }) => {
+  console.log(pileCards);
   return (
     <View style={styles.container}>
       {pileCards.map((pileCard, i) => (
@@ -19,7 +20,7 @@ const CardPile = ({ pileCards, addCardToPile }) => {
               ],
             },
           ]}
-          key={JSON.stringify(pileCard.positionData)}
+          key={JSON.stringify(pileCard.cardData)}
         >
           <Card card={pileCard.cardData} />
 
