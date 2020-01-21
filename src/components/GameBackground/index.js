@@ -1,40 +1,15 @@
 import React, { useRef, useCallback } from 'react';
-import { View, Animated, TouchableOpacity } from 'react-native';
+import { Animated, TouchableOpacity } from 'react-native';
 import Svg, { Circle } from 'react-native-svg';
 
 import { COLORS } from '../../constants';
-import { Card } from '../';
-import RotationProvider from './RotationProvider';
-import ArcsCircle from './ArcsCircle';
+import { ArcsCircle, RotationProvider, DeckView } from './components';
+
 import styles from './styles';
 
 const AnimatedTouchableOpacity = Animated.createAnimatedComponent(
   TouchableOpacity,
 );
-
-const DeckView = React.memo(() => (
-  <React.Fragment>
-    {new Array(20).fill(0).map((el, i) => (
-      <View
-        key={i}
-        style={[
-          styles.absoluteView,
-          {
-            transform: [
-              { rotateZ: '135deg' },
-              { rotateY: '45deg' },
-              { rotateX: '45deg' },
-              { translateX: i * 0.8 },
-              { translateY: -i * 0.6 },
-            ],
-          },
-        ]}
-      >
-        <Card card={{}} hidden />
-      </View>
-    ))}
-  </React.Fragment>
-));
 
 const GameBackground = React.memo(
   ({
@@ -54,7 +29,7 @@ const GameBackground = React.memo(
     const r3 = 70;
 
     const T = 8000;
-    const bumpT = 300;
+    const bumpAnimT = 300;
 
     const scaleBump = useCallback(() => {
       if (animationEnabled) {
@@ -64,7 +39,7 @@ const GameBackground = React.memo(
           useNativeDriver: true,
         }).start(() =>
           Animated.timing(animation.current, {
-            duration: bumpT,
+            duration: bumpAnimT,
             toValue: 1,
             useNativeDriver: true,
           }).start(),
@@ -112,17 +87,7 @@ const GameBackground = React.memo(
           </RotationProvider>
         </AnimatedTouchableOpacity>
 
-        <TouchableOpacity
-          style={[
-            styles.absoluteView,
-            // eslint-disable-next-line react-native/no-inline-styles
-            { left: 220, bottom: 160, opacity: cardDrawnThisTurn ? 0.5 : 1 },
-          ]}
-          disabled={cardDrawnThisTurn}
-          onPress={drawCard}
-        >
-          <DeckView />
-        </TouchableOpacity>
+        <DeckView {...{ drawCard, cardDrawnThisTurn }} />
       </React.Fragment>
     );
   },

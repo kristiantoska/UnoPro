@@ -1,7 +1,7 @@
 import React from 'react';
 import { Path, Circle, G } from 'react-native-svg';
 
-import { COLORS } from '../../constants';
+import { COLORS } from '../../../constants';
 
 const degToRad = deg => (deg * Math.PI) / 180;
 
