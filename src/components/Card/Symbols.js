@@ -4,7 +4,7 @@ import { Rect, G } from 'react-native-svg';
 import { COLORS } from '../../constants';
 import * as SymbolComps from './components';
 
-const Symbols = params => {
+const Symbols = ({ shadowsEnabled, ...params }) => {
   const { cardHeight, cardWidth, value, color, fontSize } = params;
 
   const Comp =
@@ -14,7 +14,7 @@ const Symbols = params => {
 
   return (
     <React.Fragment>
-      {value !== 'wild' && (
+      {value !== 'wild' && shadowsEnabled && (
         <G x={1} y={1}>
           <Comp {...{ ...params, color: 'black', shadow: true }} />
         </G>
@@ -29,8 +29,12 @@ const Symbols = params => {
           height={2}
           width={14}
           fill={COLORS[color]}
-          stroke="black"
-          strokeWidth={0.5}
+          {...(shadowsEnabled
+            ? {
+                stroke: 'black',
+                strokeWidth: 0.5,
+              }
+            : {})}
         />
       )}
     </React.Fragment>
