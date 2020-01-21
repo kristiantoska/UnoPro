@@ -53,7 +53,6 @@ const GameBackground = React.memo(
     const r2 = 60;
     const r3 = 70;
 
-    const color = 'blue';
     const T = 8000;
     const bumpT = 300;
 
@@ -79,14 +78,19 @@ const GameBackground = React.memo(
           activeOpacity={1}
           style={[
             styles.container,
-            { transform: [{ scale: animation.current }] },
+            {
+              transform: [
+                { scale: animation.current },
+                { rotateX: turnsReversed ? '180deg' : '0deg' },
+              ],
+            },
           ]}
           onPress={() => scaleBump()}
         >
           <RotationProvider
             style={styles.absoluteView}
             duration={T * 2.5}
-            flipped={!turnsReversed}
+            flipped={false}
             {...{ animationEnabled }}
           >
             <Svg height={300} width={300}>
@@ -102,7 +106,7 @@ const GameBackground = React.memo(
                 r={r3}
                 shiftAngle={45}
                 {...{ cx, cy, color: boardColor }}
-                flipped={!turnsReversed}
+                flipped={false}
               />
             </Svg>
           </RotationProvider>
@@ -111,6 +115,7 @@ const GameBackground = React.memo(
         <TouchableOpacity
           style={[
             styles.absoluteView,
+            // eslint-disable-next-line react-native/no-inline-styles
             { left: 220, bottom: 160, opacity: cardDrawnThisTurn ? 0.5 : 1 },
           ]}
           disabled={cardDrawnThisTurn}

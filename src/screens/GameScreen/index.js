@@ -217,7 +217,7 @@ const GameScreen = () => {
 
       {NUM_PLAYERS > 2 && (
         <Player
-          position="right"
+          position="left"
           cards={players.p2}
           hasTurn={turn === 'p2'}
           active
@@ -235,7 +235,7 @@ const GameScreen = () => {
 
       {NUM_PLAYERS === 4 && (
         <Player
-          position="left"
+          position="right"
           cards={players.p4}
           hasTurn={turn === 'p4'}
           active
