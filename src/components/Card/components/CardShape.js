@@ -17,7 +17,7 @@ const CardShape = ({ cardHeight, cardWidth, value, color, fontSize }) => {
       height={height}
       fill={COLORS[color]}
       stroke={COLORS.black}
-      strokeWidth={1}
+      strokeWidth={0.5}
       rx={1}
       ry={1}
       rotation={4}
