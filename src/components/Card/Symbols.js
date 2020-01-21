@@ -4,7 +4,7 @@ import { Rect, G } from 'react-native-svg';
 import { COLORS } from '../../constants';
 import * as SymbolComps from './components';
 
-const Symbols = ({ shadowsEnabled, ...params }) => {
+const Symbols = ({ shadowsEnabled = false, ...params }) => {
   const { cardHeight, cardWidth, value, color, fontSize } = params;
 
   const Comp =
