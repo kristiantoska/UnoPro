@@ -1,5 +1,5 @@
 import React, { useRef, useReducer, useCallback, useEffect } from 'react';
-import { Transitioning, Transition } from 'react-native-reanimated';
+import { Transitioning, Transition, set } from 'react-native-reanimated';
 
 import {
   GameBackground,
@@ -7,6 +7,7 @@ import {
   CardPile,
   ColorPicker,
 } from '../../components';
+import { randomIntFromInterval } from '../../utils';
 import GameStateReducer, {
   INIT_GAME_STATE,
   INIT_PLAYERS_STATE,
@@ -14,6 +15,7 @@ import GameStateReducer, {
 import styles from './styles';
 
 const NUM_PLAYERS = 4;
+const AI_ENABLED = false;
 
 const transition = (
   <Transition.Sequence>
@@ -68,11 +70,13 @@ const GameScreen = () => {
             setTimeout(() => {
               throwCard(null);
             }, 700);
+          } else if (AI_ENABLED && turn !== 'p1') {
+            aiMove(nextPossibleMoves);
           }
         },
       },
     });
-  }, [turn, activeCardFilter, throwCard]);
+  }, [turn, activeCardFilter, throwCard, aiMove]);
 
   const beforeNextTurn = useCallback(() => {
     setTimeout(() => {
@@ -80,9 +84,11 @@ const GameScreen = () => {
 
       if (possibleMoves.length === 0) {
         drawCard();
+      } else if (AI_ENABLED && turn !== 'p1') {
+        aiMove(possibleMoves);
       }
     }, 500);
-  }, [players, turn, activeCardFilter, drawCard]);
+  }, [players, turn, activeCardFilter, drawCard, aiMove]);
 
   useEffect(() => {
     if (turn !== null) {
@@ -165,6 +171,20 @@ const GameScreen = () => {
     [turn, drawCards],
   );
 
+  const aiMove = useCallback(
+    possibleMoves => {
+      const aiCard =
+        possibleMoves[randomIntFromInterval(0, possibleMoves.length - 1)];
+
+      setTimeout(
+        () =>
+          throwCard(aiCard, aiCard.color !== 'black' ? aiCard.color : 'red'),
+        400,
+      );
+    },
+    [throwCard],
+  );
+
   const onCardClick = useCallback(
     card => {
       if (card.value === 'wildDraw4' || card.value === 'wild') {
@@ -220,7 +240,7 @@ const GameScreen = () => {
           position="left"
           cards={players.p2}
           hasTurn={turn === 'p2'}
-          active
+          active={!AI_ENABLED}
           {...{ activeCardFilter, onCardClick }}
         />
       )}
@@ -229,7 +249,7 @@ const GameScreen = () => {
         position="top"
         cards={NUM_PLAYERS === 2 ? players.p2 : players.p3}
         hasTurn={turn === (NUM_PLAYERS === 2 ? 'p2' : 'p3')}
-        active
+        active={!AI_ENABLED}
         {...{ activeCardFilter, onCardClick }}
       />
 
@@ -238,7 +258,7 @@ const GameScreen = () => {
           position="right"
           cards={players.p4}
           hasTurn={turn === 'p4'}
-          active
+          active={!AI_ENABLED}
           {...{ activeCardFilter, onCardClick }}
         />
       )}
