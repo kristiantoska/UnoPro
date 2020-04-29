@@ -26,7 +26,7 @@ const Card = React.memo(({ card, hidden, inCardHand, onCardClick }) => {
   return (
     <TouchableOpacity
       style={[
-        styles.container,
+        inCardHand && styles.cardBorder,
         {
           height: cardHeight,
           width: cardWidth,
