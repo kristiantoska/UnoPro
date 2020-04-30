@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Dimensions } from 'react-native';
+import { View, Text, Dimensions, TouchableOpacity } from 'react-native';
 import Svg, { Path } from 'react-native-svg';
 
 import { CardHand } from '../';
@@ -17,8 +17,12 @@ const Player = ({
   onCardClick,
   active,
   hasTurn,
+  unoSaidThisTurn,
+  sayUno,
+  gameActive,
 }) => {
   const arcHeight = height + 5;
+  const canSayUno = gameActive && hasTurn && cards.length === 2;
 
   return (
     <View
@@ -48,13 +52,27 @@ const Player = ({
         <CardHand
           cards={cards}
           hidden={!active}
-          hasTurn={hasTurn}
+          hasTurn={hasTurn && gameActive}
           activeCardFilter={activeCardFilter}
           onCardClick={onCardClick}
         />
       </View>
 
       <View style={styles.playerIcon} />
+
+      {sayUno && (
+        <TouchableOpacity
+          style={[
+            styles.unoButton,
+            !canSayUno && styles.unoButtonDisabled,
+            unoSaidThisTurn && styles.unoButtonPressed,
+          ]}
+          onPress={sayUno}
+          disabled={unoSaidThisTurn || !canSayUno}
+        >
+          <Text style={styles.unoButtonText}>UNO</Text>
+        </TouchableOpacity>
+      )}
     </View>
   );
 };

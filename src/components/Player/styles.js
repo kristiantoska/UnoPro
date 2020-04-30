@@ -25,4 +25,27 @@ export default StyleSheet.create({
     flex: 1,
     marginHorizontal: 30,
   },
+
+  unoButton: {
+    position: 'absolute',
+    right: -20,
+    top: -40,
+    height: 50,
+    width: 50,
+    borderRadius: 25,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'orange',
+  },
+  unoButtonDisabled: {
+    opacity: 0.6,
+  },
+  unoButtonPressed: {
+    backgroundColor: 'green',
+  },
+  unoButtonText: {
+    color: 'white',
+    fontSize: 18,
+    fontWeight: 'bold',
+  },
 });

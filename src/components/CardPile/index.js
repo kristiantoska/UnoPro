@@ -5,7 +5,6 @@ import { Card } from '../';
 import styles from './styles';
 
 const CardPile = ({ pileCards, addCardToPile }) => {
-  console.log(pileCards);
   return (
     <View style={styles.container}>
       {pileCards.map((pileCard, i) => (

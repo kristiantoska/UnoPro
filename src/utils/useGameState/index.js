@@ -13,8 +13,16 @@ const useGameState = ({ containerRef, numPlayers, aiEnabled }) => {
   const tmpCard = useRef(null);
   const turnOrder = useRef(null);
 
-  const { turn, lastCardValue, boardColor, players } = gameState;
+  const {
+    turn,
+    lastCardValue,
+    boardColor,
+    players,
+    unoSaidThisTurn,
+    gameActive,
+  } = gameState;
 
+  const shouldAiMove = aiEnabled && turn !== 'p1';
   const areTurnsReversed = turnOrder.current
     ? turnOrder.current[0] > turnOrder.current[1]
     : false;
@@ -24,6 +32,22 @@ const useGameState = ({ containerRef, numPlayers, aiEnabled }) => {
     dispatch({ type: 'INIT_GAME', payload: { numPlayers } });
     turnOrder.current = Object.keys(INIT_PLAYERS_STATE).slice(0, numPlayers);
   }, [numPlayers]);
+
+  const setGameStatus = useCallback(
+    isGameActive => {
+      if (gameActive === isGameActive) {
+        return;
+      }
+      dispatch({
+        type: 'TOGGLE_GAME_ACTIVE',
+        payload: { gameActive: isGameActive },
+      });
+      containerRef.current.setNativeProps({
+        pointerEvents: isGameActive ? 'auto' : 'none',
+      });
+    },
+    [containerRef, gameActive],
+  );
 
   const activeCardFilter = useCallback(
     card =>
@@ -42,35 +66,16 @@ const useGameState = ({ containerRef, numPlayers, aiEnabled }) => {
         afterDraw: newCards => {
           const nextPossibleMoves = newCards.filter(activeCardFilter);
           if (nextPossibleMoves.length === 0) {
-            setTimeout(() => {
-              throwCard(null);
-            }, 700);
-          } else if (aiEnabled && turn !== 'p1') {
+            throwCard(null);
+          } else if (shouldAiMove) {
             aiMove(nextPossibleMoves);
+          } else {
+            setGameStatus(true);
           }
         },
       },
     });
-  }, [turn, activeCardFilter, throwCard, aiMove, aiEnabled]);
-
-  const beforeNextTurn = useCallback(() => {
-    setTimeout(() => {
-      const possibleMoves = players[turn].filter(activeCardFilter);
-
-      if (possibleMoves.length === 0) {
-        drawCard();
-      } else if (aiEnabled && turn !== 'p1') {
-        aiMove(possibleMoves);
-      }
-    }, 500);
-  }, [players, turn, activeCardFilter, drawCard, aiMove, aiEnabled]);
-
-  useEffect(() => {
-    if (turn !== null) {
-      beforeNextTurn();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [turn]);
+  }, [turn, activeCardFilter, throwCard, aiMove, setGameStatus, shouldAiMove]);
 
   const drawCards = useCallback((amount, player, endCallback) => {
     if (amount === 0) {
@@ -81,13 +86,97 @@ const useGameState = ({ containerRef, numPlayers, aiEnabled }) => {
         payload: { player },
       });
 
-      setTimeout(() => drawCards(amount - 1, player, endCallback), 400);
+      setTimeout(() => drawCards(amount - 1, player, endCallback), 300);
     }
   }, []);
 
+  const onTurnStart = useCallback(() => {
+    const possibleMoves = players[turn].filter(activeCardFilter);
+
+    if (possibleMoves.length === 0) {
+      drawCard();
+    } else if (shouldAiMove) {
+      aiMove(possibleMoves);
+    } else {
+      setGameStatus(true);
+    }
+  }, [
+    players,
+    turn,
+    activeCardFilter,
+    drawCard,
+    aiMove,
+    setGameStatus,
+    shouldAiMove,
+  ]);
+
+  const endTurn = useCallback(
+    (nextTurn, card, newBoardColor) => {
+      let cardDrawPenalty = 0;
+
+      if (card !== null) {
+        dispatch({
+          type: 'THROW_CARD',
+          payload: {
+            cardData: card,
+            newBoardColor,
+          },
+        });
+      }
+
+      // MANAGE "SAY UNO" miss penalty
+      if (
+        !shouldAiMove &&
+        players[turn].length === 2 &&
+        card !== null &&
+        !unoSaidThisTurn
+      ) {
+        cardDrawPenalty += 2;
+      }
+
+      // MANAGE +2 +4 stacking/draw
+      if (
+        cardDrawModifier.current !== null &&
+        (card === null ||
+          (card.value !== 'draw2' && card.value !== 'wildDraw4'))
+      ) {
+        cardDrawPenalty += cardDrawAmount.current;
+        cardDrawModifier.current = null;
+        cardDrawAmount.current = 0;
+      }
+
+      if (cardDrawPenalty > 0) {
+        drawCards(cardDrawPenalty, turn, () => {
+          dispatch({
+            type: 'NEXT_TURN',
+            payload: {
+              newTurn: nextTurn,
+            },
+          });
+        });
+      } else {
+        dispatch({
+          type: 'NEXT_TURN',
+          payload: {
+            newTurn: nextTurn,
+          },
+        });
+      }
+    },
+    [turn, drawCards, players, unoSaidThisTurn, shouldAiMove],
+  );
+
+  useEffect(() => {
+    if (turn !== null) {
+      onTurnStart();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [turn]);
+
   const throwCard = useCallback(
     (card, newBoardColor) => {
-      const savedTurn = turn;
+      setGameStatus(false);
+
       const currentTurn = turnOrder.current.findIndex(el => el === turn);
       let nextTurn =
         turnOrder.current[(currentTurn + 1) % turnOrder.current.length];
@@ -116,34 +205,9 @@ const useGameState = ({ containerRef, numPlayers, aiEnabled }) => {
         }
       }
 
-      const endTurn = () => {
-        containerRef.current.setNativeProps({ pointerEvents: 'auto' });
-        dispatch({
-          type: 'THROW_CARD',
-          payload: {
-            newTurn: nextTurn,
-            cardData: card,
-            newBoardColor,
-          },
-        });
-      };
-
-      // MANAGE +2 +4 stacking/draw
-      if (
-        cardDrawModifier.current !== null &&
-        (card === null ||
-          (card.value !== 'draw2' && card.value !== 'wildDraw4'))
-      ) {
-        containerRef.current.setNativeProps({ pointerEvents: 'none' });
-        drawCards(cardDrawAmount.current, savedTurn, endTurn);
-
-        cardDrawModifier.current = null;
-        cardDrawAmount.current = 0;
-      } else {
-        endTurn();
-      }
+      endTurn(nextTurn, card, newBoardColor);
     },
-    [turn, drawCards],
+    [turn, endTurn, setGameStatus],
   );
 
   const aiMove = useCallback(
@@ -183,9 +247,11 @@ const useGameState = ({ containerRef, numPlayers, aiEnabled }) => {
     [throwCard],
   );
 
+  const sayUno = useCallback(() => dispatch({ type: 'SAY_UNO' }), []);
+
   return [
     gameState,
-    { drawCard, activeCardFilter, onCardClick, onColorPick },
+    { drawCard, activeCardFilter, onCardClick, onColorPick, sayUno },
     areTurnsReversed,
   ];
 };

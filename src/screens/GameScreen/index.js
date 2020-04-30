@@ -1,6 +1,5 @@
 import React, { useRef } from 'react';
-import { View } from 'react-native';
-import { Transitioning, Transition } from 'react-native-reanimated';
+import { Transition, Transitioning } from 'react-native-reanimated';
 
 import {
   GameBackground,
@@ -16,26 +15,26 @@ const OPTIONS = {
   aiEnabled: false,
 };
 
-const cardHandTransition = (
+const transition = (
   <Transition.Sequence>
-    <Transition.In type="slide-bottom" />
-    <Transition.Change />
-    <Transition.Out type="fade" />
+    <Transition.Change interpolation="easeInOut" durationMs={200} />
+    <Transition.In type="fade" durationMs={100} />
   </Transition.Sequence>
 );
 
 const GameScreen = () => {
   const containerRef = useRef();
-  const cardHandContainerRef = React.useRef();
 
   const [
     gameState,
-    { drawCard, activeCardFilter, onCardClick, onColorPick },
+    { drawCard, activeCardFilter, onCardClick, onColorPick, sayUno },
     areTurnsReversed,
-  ] = useGameState({ ...OPTIONS, containerRef });
+  ] = useGameState({
+    ...OPTIONS,
+    containerRef,
+  });
 
-  cardHandContainerRef.current &&
-    cardHandContainerRef.current.animateNextTransition();
+  containerRef.current && containerRef.current.animateNextTransition();
 
   const {
     turn,
@@ -44,10 +43,16 @@ const GameScreen = () => {
     players,
     colorPickerVisible,
     cardDrawnThisTurn,
+    unoSaidThisTurn,
+    gameActive,
   } = gameState;
 
   return (
-    <View ref={containerRef} style={styles.container}>
+    <Transitioning.View
+      ref={containerRef}
+      style={styles.container}
+      transition={transition}
+    >
       <GameBackground
         boardColor={boardColor}
         turnsReversed={areTurnsReversed}
@@ -57,50 +62,62 @@ const GameScreen = () => {
 
       <CardPile pileCards={pileCards} />
 
-      <Transitioning.View
-        ref={cardHandContainerRef}
-        transition={cardHandTransition}
-        style={styles.container}
-      >
-        <Player
-          position="bottom"
-          cards={players.p1}
-          hasTurn={turn === 'p1'}
-          active
-          {...{ activeCardFilter, onCardClick }}
-        />
+      <Player
+        position="bottom"
+        cards={players.p1}
+        hasTurn={turn === 'p1'}
+        active
+        {...{
+          activeCardFilter,
+          onCardClick,
+          unoSaidThisTurn,
+          sayUno,
+          gameActive,
+        }}
+      />
 
-        {OPTIONS.numPlayers > 2 && (
-          <Player
-            position="left"
-            cards={players.p2}
-            hasTurn={turn === 'p2'}
-            active={!OPTIONS.aiEnabled}
-            {...{ activeCardFilter, onCardClick }}
-          />
-        )}
-
+      {OPTIONS.numPlayers > 2 && (
         <Player
-          position="top"
-          cards={OPTIONS.numPlayers === 2 ? players.p2 : players.p3}
-          hasTurn={turn === (OPTIONS.numPlayers === 2 ? 'p2' : 'p3')}
+          position="left"
+          cards={players.p2}
+          hasTurn={turn === 'p2'}
           active={!OPTIONS.aiEnabled}
-          {...{ activeCardFilter, onCardClick }}
+          {...{
+            activeCardFilter,
+            onCardClick,
+            gameActive,
+          }}
         />
+      )}
 
-        {OPTIONS.numPlayers === 4 && (
-          <Player
-            position="right"
-            cards={players.p4}
-            hasTurn={turn === 'p4'}
-            active={!OPTIONS.aiEnabled}
-            {...{ activeCardFilter, onCardClick }}
-          />
-        )}
-      </Transitioning.View>
+      <Player
+        position="top"
+        cards={OPTIONS.numPlayers === 2 ? players.p2 : players.p3}
+        hasTurn={turn === (OPTIONS.numPlayers === 2 ? 'p2' : 'p3')}
+        active={!OPTIONS.aiEnabled}
+        {...{
+          activeCardFilter,
+          onCardClick,
+          gameActive,
+        }}
+      />
+
+      {OPTIONS.numPlayers === 4 && (
+        <Player
+          position="right"
+          cards={players.p4}
+          hasTurn={turn === 'p4'}
+          active={!OPTIONS.aiEnabled}
+          {...{
+            activeCardFilter,
+            onCardClick,
+            gameActive,
+          }}
+        />
+      )}
 
       <ColorPicker visible={colorPickerVisible} onColorClick={onColorPick} />
-    </View>
+    </Transitioning.View>
   );
 };
 
