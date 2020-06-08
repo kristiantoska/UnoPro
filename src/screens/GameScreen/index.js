@@ -24,6 +24,8 @@ const GameScreen = ({ socket, room, username, aiEnabled = false }) => {
   const containerRef = useRef();
   let positionsIndex = -1;
 
+  const currentPlayerIndex = room.players.findIndex(pl => pl.name === username);
+
   const [
     gameState,
     { drawCard, activeCardFilter, onCardClick, onColorPick, sayUno },
@@ -31,7 +33,6 @@ const GameScreen = ({ socket, room, username, aiEnabled = false }) => {
   ] = useGameState({
     socket,
     room,
-    playersData: room.players,
     aiEnabled,
     containerRef,
   });
@@ -63,7 +64,9 @@ const GameScreen = ({ socket, room, username, aiEnabled = false }) => {
       <GameBackground
         boardColor={boardColor}
         turnsReversed={areTurnsReversed}
-        cardDrawnThisTurn={cardDrawnThisTurn}
+        canDrawCard={
+          !cardDrawnThisTurn && turn === `p${currentPlayerIndex + 1}`
+        }
         drawCard={drawCard}
       />
 

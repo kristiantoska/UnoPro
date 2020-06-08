@@ -28,7 +28,7 @@ const Deck = React.memo(() => (
   </React.Fragment>
 ));
 
-const DeckView = ({ cardDrawnThisTurn, drawCard }) => (
+const DeckView = ({ canDrawCard, drawCard }) => (
   <TouchableOpacity
     style={[
       styles.absoluteView,
@@ -38,13 +38,13 @@ const DeckView = ({ cardDrawnThisTurn, drawCard }) => (
         width: 76,
         left: 160,
         bottom: 120,
-        opacity: cardDrawnThisTurn ? 0.5 : 1,
+        opacity: !canDrawCard ? 0.5 : 1,
         // backgroundColor: 'red',
         alignItems: 'center',
         justifyContent: 'center',
       },
     ]}
-    disabled={cardDrawnThisTurn}
+    disabled={!canDrawCard}
     onPress={drawCard}
   >
     <Deck />

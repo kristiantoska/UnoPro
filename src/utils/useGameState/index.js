@@ -5,15 +5,9 @@ import GameStateReducer, {
   INIT_PLAYERS_STATE,
 } from './reducer';
 
-const useGameState = ({
-  socket,
-  room,
-  containerRef,
-  playersData,
-  aiEnabled,
-}) => {
+const useGameState = ({ socket, room, containerRef, aiEnabled }) => {
   const [gameState, dispatch] = useReducer(GameStateReducer, INIT_GAME_STATE);
-  const numPlayers = playersData.length;
+  const numPlayers = room.players.length;
 
   const cardDrawModifier = useRef(null);
   const cardDrawAmount = useRef(0);
@@ -101,7 +95,7 @@ const useGameState = ({
     const possibleMoves = players[turn].filter(activeCardFilter);
 
     if (possibleMoves.length === 0) {
-      drawCard();
+      setTimeout(() => drawCard(), 300);
     } else if (shouldAiMove) {
       aiMove(possibleMoves);
     } else {
@@ -128,13 +122,6 @@ const useGameState = ({
             cardData: card,
             newBoardColor,
           },
-        });
-
-        socket.emit('playTurn', {
-          roomId: room.roomId,
-          nextTurn,
-          card,
-          newBoardColor,
         });
       }
 
@@ -181,14 +168,6 @@ const useGameState = ({
   );
 
   useEffect(() => {
-    if (socket) {
-      socket.on('onPlayTurn', data => {
-        endTurn(data.nextTurn, data.card, data.newBoardColor);
-      });
-    }
-  }, [socket]);
-
-  useEffect(() => {
     if (turn !== null) {
       onTurnStart();
     }
@@ -206,6 +185,7 @@ const useGameState = ({
       if (card !== null) {
         // MANAGE special cards
         if (card.value === 'reverse') {
+          // TODO fix when no usabe cards in hand
           nextTurn =
             turnOrder.current[
               (currentTurn + turnOrder.current.length - 1) %
@@ -232,6 +212,16 @@ const useGameState = ({
     [turn, endTurn, setGameStatus],
   );
 
+  useEffect(() => {
+    if (socket) {
+      socket.off('onPlayTurn');
+
+      socket.on('onPlayTurn', data => {
+        throwCard(data.card, data.newBoardColor);
+      });
+    }
+  }, [socket, throwCard]);
+
   const aiMove = useCallback(
     possibleMoves => {
       const aiCard =
@@ -253,9 +243,15 @@ const useGameState = ({
         tmpCard.current = card;
       } else {
         throwCard(card, card.color);
+
+        socket.emit('playTurn', {
+          roomId: room.roomId,
+          card,
+          newBoardColor: card.color,
+        });
       }
     },
-    [throwCard],
+    [throwCard, room, socket],
   );
 
   const onColorPick = useCallback(
@@ -265,8 +261,14 @@ const useGameState = ({
         payload: { visible: false },
       });
       throwCard(tmpCard.current, pickedColor);
+
+      socket.emit('playTurn', {
+        roomId: room.roomId,
+        card: tmpCard.current,
+        newBoardColor: pickedColor,
+      });
     },
-    [throwCard],
+    [throwCard, room, socket],
   );
 
   const sayUno = useCallback(() => dispatch({ type: 'SAY_UNO' }), []);

@@ -17,7 +17,7 @@ const GameBackground = React.memo(
     boardColor,
     turnsReversed,
     drawCard,
-    cardDrawnThisTurn,
+    canDrawCard,
   }) => {
     const animation = useRef(new Animated.Value(1));
 
@@ -87,7 +87,7 @@ const GameBackground = React.memo(
           </RotationProvider>
         </AnimatedTouchableOpacity>
 
-        <DeckView {...{ drawCard, cardDrawnThisTurn }} />
+        <DeckView {...{ drawCard, canDrawCard }} />
       </React.Fragment>
     );
   },

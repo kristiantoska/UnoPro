@@ -15,7 +15,7 @@ export const INIT_PLAYERS_STATE = {
   p4: [],
 };
 export const INIT_GAME_STATE = {
-  turn: 'p1',
+  turn: null,
   lastCardValue: null,
   boardColor: null,
   deck: fullDeck(),
