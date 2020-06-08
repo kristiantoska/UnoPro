@@ -1,12 +1,20 @@
+import seedrandom from 'seedrandom';
+
 const D_X = 18;
 const D_Y = 18;
 const D_ANGLE = 90;
+
+let rng = seedrandom();
+
+export const setRandomSeed = seed => {
+  rng = seedrandom(seed);
+};
 
 export const isSameCard = (c1, c2) =>
   c1.value === c2.value && c1.color === c2.color && c1.key === c2.key;
 
 export const randomIntFromInterval = (min, max) => {
-  return Math.floor(Math.random() * (max - min + 1) + min);
+  return Math.floor(rng() * (max - min + 1) + min);
 };
 
 export function getRandomPileCardPosition() {

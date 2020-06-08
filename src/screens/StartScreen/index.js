@@ -61,7 +61,7 @@ const StartScreen = ({ username, setUsername, createLobby, joinLobby }) => {
 
   const handleDialogSubmit = () => {
     setCodeDialogVisible(false);
-    joinLobby(roomCode);
+    joinLobby(Number(roomCode));
   };
 
   const handleRoomCodeChange = newRoomCode => {

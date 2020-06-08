@@ -3,6 +3,8 @@ import { SafeAreaView, StatusBar, InteractionManager } from 'react-native';
 import Modal from 'react-native-modal';
 import io from 'socket.io-client';
 
+import { setRandomSeed } from './utils';
+
 import StartScreen from './screens/StartScreen';
 import Lobby from './screens/Lobby';
 import GameScreen from './screens/GameScreen';
@@ -10,10 +12,9 @@ import GameScreen from './screens/GameScreen';
 const App = () => {
   const [username, setUsername] = React.useState('');
   const [socket, setSocket] = React.useState();
-  const [players, setPlayers] = React.useState([]);
+  const [room, setRoom] = React.useState();
   const [lobbyVisible, setLobbyVisible] = React.useState(false);
   const [gameVisible, setGameVisible] = React.useState(false);
-  const [roomCode, setRoomCode] = React.useState();
 
   React.useEffect(() => {
     const ioSocket = io('http://localhost:8000');
@@ -22,15 +23,14 @@ const App = () => {
 
   const openLobby = React.useCallback(
     roomData => {
-      setRoomCode(roomData.roomId);
-      setPlayers(roomData.players);
+      setRoom(roomData);
       InteractionManager.runAfterInteractions(() => setLobbyVisible(true));
     },
-    [setRoomCode, setPlayers, setLobbyVisible],
+    [setRoom, setLobbyVisible],
   );
 
   const updateLobby = roomData => {
-    setPlayers(roomData.players);
+    setRoom(roomData);
   };
 
   React.useEffect(() => {
@@ -42,6 +42,12 @@ const App = () => {
       socket.on('onLobbyUpdate', data => {
         updateLobby(data.room);
       });
+
+      socket.on('onGameStart', data => {
+        setRandomSeed(data.seed);
+        setLobbyVisible(false);
+        InteractionManager.runAfterInteractions(() => setGameVisible(true));
+      });
     }
   }, [socket, openLobby]);
 
@@ -50,7 +56,7 @@ const App = () => {
   };
 
   const joinLobby = code => {
-    socket.emit('joinLobby', { name: username, roomId: Number(code) });
+    socket.emit('joinLobby', { name: username, roomId: code });
   };
 
   const leaveLobby = () => {
@@ -59,7 +65,7 @@ const App = () => {
 
   const startGame = () => {
     setLobbyVisible(false);
-    InteractionManager.runAfterInteractions(() => setGameVisible(true));
+    socket.emit('startGame', { roomId: room.roomId });
   };
 
   return (
@@ -73,12 +79,12 @@ const App = () => {
           joinLobby={joinLobby}
         />
 
-        <Modal isVisible={lobbyVisible} useNativeDriver>
+        <Modal isVisible={lobbyVisible}>
           <Lobby
             startGame={startGame}
             leaveLobby={leaveLobby}
-            roomCode={roomCode}
-            players={players}
+            room={room}
+            username={username}
           />
         </Modal>
 
@@ -86,9 +92,8 @@ const App = () => {
           style={{ margin: 0 }}
           isVisible={gameVisible}
           hasBackdrop={false}
-          useNativeDriver
         >
-          <GameScreen />
+          <GameScreen room={room} username={username} socket={socket} />
         </Modal>
       </SafeAreaView>
     </React.Fragment>
