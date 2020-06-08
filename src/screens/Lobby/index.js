@@ -13,33 +13,34 @@ const PlayerCard = ({ player }) => (
   </View>
 );
 
-const Lobby = ({
-  players = [{ name: 'Aaron' }],
-  roomCode,
-  startGame,
-  leaveLobby,
-}) => (
-  <View style={styles.container}>
-    <View style={styles.playersRow}>
-      {new Array(4).fill(0).map((el, i) => (
-        <PlayerCard key={i} player={players[i]} />
-      ))}
-    </View>
+const Lobby = ({ players, roomCode, startGame, leaveLobby }) => {
+  console.log(players);
 
-    <View style={styles.footer}>
-      <View style={styles.codeView}>
-        <Text style={styles.codeText}>{`Code: ${roomCode.split('-')[1]}`}</Text>
+  return (
+    <View style={styles.container}>
+      <View style={styles.playersRow}>
+        {new Array(4).fill(0).map((el, i) => (
+          <PlayerCard key={i} player={players[i]} />
+        ))}
       </View>
 
-      <TouchableOpacity style={styles.startButton} onPress={startGame}>
-        <Text style={styles.cancelButtonText}>Start</Text>
-      </TouchableOpacity>
+      <View style={styles.footer}>
+        <View style={styles.codeView}>
+          <Text style={styles.codeText}>{`Code: ${
+            roomCode.split('-')[1]
+          }`}</Text>
+        </View>
 
-      <TouchableOpacity style={styles.cancelButton} onPress={leaveLobby}>
-        <Text style={styles.cancelButtonText}>Cancel</Text>
-      </TouchableOpacity>
+        <TouchableOpacity style={styles.startButton} onPress={startGame}>
+          <Text style={styles.cancelButtonText}>Start</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity style={styles.cancelButton} onPress={leaveLobby}>
+          <Text style={styles.cancelButtonText}>Cancel</Text>
+        </TouchableOpacity>
+      </View>
     </View>
-  </View>
-);
+  );
+};
 
 export default Lobby;

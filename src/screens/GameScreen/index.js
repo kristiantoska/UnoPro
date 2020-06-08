@@ -10,11 +10,6 @@ import {
 import useGameState from '../../utils/useGameState';
 import styles from './styles';
 
-const OPTIONS = {
-  numPlayers: 4,
-  aiEnabled: false,
-};
-
 const transition = (
   <Transition.Sequence>
     <Transition.Change interpolation="easeInOut" durationMs={200} />
@@ -22,15 +17,17 @@ const transition = (
   </Transition.Sequence>
 );
 
-const GameScreen = () => {
+const GameScreen = ({ playersData = [1, 2, 3, 4], aiEnabled = false }) => {
   const containerRef = useRef();
+  const numPlayers = playersData.length;
 
   const [
     gameState,
     { drawCard, activeCardFilter, onCardClick, onColorPick, sayUno },
     areTurnsReversed,
   ] = useGameState({
-    ...OPTIONS,
+    numPlayers,
+    aiEnabled,
     containerRef,
   });
 
@@ -76,12 +73,12 @@ const GameScreen = () => {
         }}
       />
 
-      {OPTIONS.numPlayers > 2 && (
+      {numPlayers > 2 && (
         <Player
           position="left"
           cards={players.p2}
           hasTurn={turn === 'p2'}
-          active={!OPTIONS.aiEnabled}
+          active={!aiEnabled}
           {...{
             activeCardFilter,
             onCardClick,
@@ -92,9 +89,9 @@ const GameScreen = () => {
 
       <Player
         position="top"
-        cards={OPTIONS.numPlayers === 2 ? players.p2 : players.p3}
-        hasTurn={turn === (OPTIONS.numPlayers === 2 ? 'p2' : 'p3')}
-        active={!OPTIONS.aiEnabled}
+        cards={numPlayers === 2 ? players.p2 : players.p3}
+        hasTurn={turn === (numPlayers === 2 ? 'p2' : 'p3')}
+        active={!aiEnabled}
         {...{
           activeCardFilter,
           onCardClick,
@@ -102,12 +99,12 @@ const GameScreen = () => {
         }}
       />
 
-      {OPTIONS.numPlayers === 4 && (
+      {numPlayers === 4 && (
         <Player
           position="right"
           cards={players.p4}
           hasTurn={turn === 'p4'}
-          active={!OPTIONS.aiEnabled}
+          active={!aiEnabled}
           {...{
             activeCardFilter,
             onCardClick,

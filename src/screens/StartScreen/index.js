@@ -9,6 +9,7 @@ import {
 } from 'react-native';
 import AsyncStorage from '@react-native-community/async-storage';
 import { Transition, Transitioning } from 'react-native-reanimated';
+import Dialog from 'react-native-dialog';
 
 import styles from './styles';
 
@@ -18,9 +19,10 @@ const transition = (
   </Transition.Sequence>
 );
 
-const StartScreen = ({ openLobby, createLobby }) => {
+const StartScreen = ({ username, setUsername, createLobby, joinLobby }) => {
   const viewRef = React.useRef();
-  const [username, setUsername] = React.useState('');
+  const [roomCode, setRoomCode] = React.useState();
+  const [codeDialogVisible, setCodeDialogVisible] = React.useState(false);
   const [usernameEditable, setUsernameEditable] = React.useState(true);
   const [loading, setLoading] = React.useState(true);
 
@@ -34,7 +36,7 @@ const StartScreen = ({ openLobby, createLobby }) => {
       }
       setLoading(false);
     });
-  }, []);
+  }, [setUsername]);
 
   const submitUsername = () => {
     if (username.length > 2) {
@@ -48,7 +50,23 @@ const StartScreen = ({ openLobby, createLobby }) => {
     createLobby();
   };
 
-  const joinGame = () => {};
+  const joinGame = () => {
+    setCodeDialogVisible(true);
+  };
+
+  const handleDialogCancel = () => {
+    setRoomCode('');
+    setCodeDialogVisible(false);
+  };
+
+  const handleDialogSubmit = () => {
+    setCodeDialogVisible(false);
+    joinLobby(roomCode);
+  };
+
+  const handleRoomCodeChange = newRoomCode => {
+    setRoomCode(newRoomCode);
+  };
 
   if (loading) {
     return (
@@ -115,6 +133,18 @@ const StartScreen = ({ openLobby, createLobby }) => {
           )}
         </TouchableOpacity>
       </View>
+
+      <Dialog.Container visible={codeDialogVisible}>
+        <Dialog.Title>Room Code</Dialog.Title>
+        <Dialog.Input
+          value={roomCode}
+          onChangeText={handleRoomCodeChange}
+          returnKeyType="done"
+          keyboardType="decimal-pad"
+        />
+        <Dialog.Button label="Cancel" onPress={handleDialogCancel} />
+        <Dialog.Button label="OK" onPress={handleDialogSubmit} />
+      </Dialog.Container>
     </Transitioning.View>
   );
 };
