@@ -5,8 +5,15 @@ import GameStateReducer, {
   INIT_PLAYERS_STATE,
 } from './reducer';
 
-const useGameState = ({ containerRef, numPlayers, aiEnabled }) => {
+const useGameState = ({
+  socket,
+  room,
+  containerRef,
+  playersData,
+  aiEnabled,
+}) => {
   const [gameState, dispatch] = useReducer(GameStateReducer, INIT_GAME_STATE);
+  const numPlayers = playersData.length;
 
   const cardDrawModifier = useRef(null);
   const cardDrawAmount = useRef(0);
@@ -122,6 +129,13 @@ const useGameState = ({ containerRef, numPlayers, aiEnabled }) => {
             newBoardColor,
           },
         });
+
+        socket.emit('playTurn', {
+          roomId: room.roomId,
+          nextTurn,
+          card,
+          newBoardColor,
+        });
       }
 
       // MANAGE "SAY UNO" miss penalty
@@ -165,6 +179,14 @@ const useGameState = ({ containerRef, numPlayers, aiEnabled }) => {
     },
     [turn, drawCards, players, unoSaidThisTurn, shouldAiMove],
   );
+
+  useEffect(() => {
+    if (socket) {
+      socket.on('onPlayTurn', data => {
+        endTurn(data.nextTurn, data.card, data.newBoardColor);
+      });
+    }
+  }, [socket]);
 
   useEffect(() => {
     if (turn !== null) {

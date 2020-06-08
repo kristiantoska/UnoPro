@@ -17,16 +17,21 @@ const transition = (
   </Transition.Sequence>
 );
 
-const GameScreen = ({ playersData = [1, 2, 3, 4], aiEnabled = false }) => {
+// bottom is reserved for the main player
+const POSITIONS = ['top', 'left', 'right'];
+
+const GameScreen = ({ socket, room, username, aiEnabled = false }) => {
   const containerRef = useRef();
-  const numPlayers = playersData.length;
+  let positionsIndex = -1;
 
   const [
     gameState,
     { drawCard, activeCardFilter, onCardClick, onColorPick, sayUno },
     areTurnsReversed,
   ] = useGameState({
-    numPlayers,
+    socket,
+    room,
+    playersData: room.players,
     aiEnabled,
     containerRef,
   });
@@ -44,6 +49,11 @@ const GameScreen = ({ playersData = [1, 2, 3, 4], aiEnabled = false }) => {
     gameActive,
   } = gameState;
 
+  const currentPlayerProps = {
+    unoSaidThisTurn,
+    sayUno,
+  };
+
   return (
     <Transitioning.View
       ref={containerRef}
@@ -59,59 +69,29 @@ const GameScreen = ({ playersData = [1, 2, 3, 4], aiEnabled = false }) => {
 
       <CardPile pileCards={pileCards} />
 
-      <Player
-        position="bottom"
-        cards={players.p1}
-        hasTurn={turn === 'p1'}
-        active
-        {...{
-          activeCardFilter,
-          onCardClick,
-          unoSaidThisTurn,
-          sayUno,
-          gameActive,
-        }}
-      />
+      {room.players.map((player, i) => {
+        const isCurrentPlayer = player.name === username;
 
-      {numPlayers > 2 && (
-        <Player
-          position="left"
-          cards={players.p2}
-          hasTurn={turn === 'p2'}
-          active={!aiEnabled}
-          {...{
-            activeCardFilter,
-            onCardClick,
-            gameActive,
-          }}
-        />
-      )}
+        if (!isCurrentPlayer) {
+          positionsIndex++;
+        }
 
-      <Player
-        position="top"
-        cards={numPlayers === 2 ? players.p2 : players.p3}
-        hasTurn={turn === (numPlayers === 2 ? 'p2' : 'p3')}
-        active={!aiEnabled}
-        {...{
-          activeCardFilter,
-          onCardClick,
-          gameActive,
-        }}
-      />
-
-      {numPlayers === 4 && (
-        <Player
-          position="right"
-          cards={players.p4}
-          hasTurn={turn === 'p4'}
-          active={!aiEnabled}
-          {...{
-            activeCardFilter,
-            onCardClick,
-            gameActive,
-          }}
-        />
-      )}
+        return (
+          <Player
+            key={i}
+            position={isCurrentPlayer ? 'bottom' : POSITIONS[positionsIndex]}
+            cards={players[`p${i + 1}`]}
+            hasTurn={turn === `p${i + 1}`}
+            active={isCurrentPlayer || !aiEnabled}
+            {...{
+              activeCardFilter,
+              onCardClick,
+              gameActive,
+              ...(isCurrentPlayer && currentPlayerProps),
+            }}
+          />
+        );
+      })}
 
       <ColorPicker visible={colorPickerVisible} onColorClick={onColorPick} />
     </Transitioning.View>

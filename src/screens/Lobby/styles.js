@@ -30,6 +30,10 @@ export default StyleSheet.create({
     overflow: 'hidden',
   },
 
+  ownerCard: {
+    borderColor: '#52c41a',
+  },
+
   playerName: {
     color: 'white',
     fontSize: 22,
